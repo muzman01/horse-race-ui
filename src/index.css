@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: black;
+}
+
+.sprite-move {
+  transition: left 0.3s ease; /* Geçiş animasyonu */
+}
