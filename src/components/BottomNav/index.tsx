@@ -19,7 +19,7 @@ const BottomNav = () => {
           className="flex-1 group flex justify-center"
         >
           <Link
-            to="/"
+            to="/market"
             className={`flex flex-col items-center text-center mx-auto px-4 pt-2 w-full ${
               isActive("/market") ? "text-[#2cb985]" : "text-gray-400"
             } group-hover:text-[#2cb985]`}
@@ -100,7 +100,7 @@ const BottomNav = () => {
           className="flex-1 group flex justify-center"
         >
           <Link
-            to="/"
+            to="/tasks"
             className={`flex flex-col items-center text-center mx-auto px-4 pt-2 w-full ${
               isActive("/tasks") ? "text-[#2cb985]" : "text-gray-400"
             } group-hover:text-[#2cb985]`}

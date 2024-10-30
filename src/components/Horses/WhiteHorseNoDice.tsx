@@ -17,7 +17,6 @@ const WhiteHorseNoDice = () => {
   useEffect(() => {
     const moveInterval = setInterval(() => {
       setCurrentPosition((prevPosition) => {
-        // Pist bittiğinde tekrar başa dön
         return prevPosition >= 100 ? 0 : prevPosition + 0.5; // 0.5 birimle ilerlet
       });
     }, 50); // Her 50ms'de bir pozisyon güncellenir
@@ -38,19 +37,20 @@ const WhiteHorseNoDice = () => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Atın pistte sürekli soldan sağa hareket etmesi */}
+      {/* Pist container'ı */}
       <div
-        className="sprite-container"
+        className="relative w-full h-12 overflow-hidden bg-gray-700 rounded"
         style={{
           width: "100%",
           height: "50px",
+          position: "relative",
         }}
       >
+        {/* Atın pistte soldan sağa hareketi */}
         <div
-          className="sprite-move"
+          className="absolute"
           style={{
             left: `${currentPosition}%`,
-
             transition: "left 0.05s linear", // Yumuşak geçiş
           }}
         >

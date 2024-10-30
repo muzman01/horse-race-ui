@@ -5,7 +5,56 @@
 html {
   background-color: black;
 }
-
+.sprite-container {
+  position: absolute;
+  top: 0;
+  left: 0; /* Atların en solda başlamasını sağlıyoruz */
+}
 .sprite-move {
-  transition: left 0.3s ease; /* Geçiş animasyonu */
+  transition: left 0.3s ease; /* Atın pozisyon değişimi */
+  position: absolute;
+  top: 0;
+  left: 0; /* Atların en solda başlamasını sağlıyoruz */
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  animation: blink 1s infinite;
+}
+
+.circle-outer {
+  background: linear-gradient(to bottom, #24976c, #202731);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70vw;
+  height: 70vw;
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.circle-inner {
+  background: radial-gradient(circle, #24976c, #282e3e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes float {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
 }
