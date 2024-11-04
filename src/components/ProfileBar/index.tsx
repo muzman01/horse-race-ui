@@ -34,7 +34,7 @@ const ProfileBar = () => {
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
           <div className="flex-1 text-center items-center">
             <div className="text-sm flex items-center justify-center gap-1 text-[#85827d] font-medium">
-              {ton_amount} TON
+              {ton_amount.toFixed(4)} TON
             </div>
           </div>
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>

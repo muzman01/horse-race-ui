@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import ClipLoader from "react-spinners/ClipLoader";
 import { greenSaddleIcon, saddleIcon } from "../../images";
+import useToast from "../../hooks/useToast";
 
 interface MarketItemModalProps {
   item_name: string;
@@ -22,16 +23,60 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
   id,
   price,
 }) => {
-  const [isPurchased] = useState(false);
-  const [loading] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  console.log(id);
 
+  const { success, error } = useToast();
   const user = useSelector((state: RootState) => state.user.user);
-
+  const telegram_id = useSelector(
+    (state: RootState) => state?.user?.user?.telegram_id
+  );
   const ton_amount = user?.ton_amount || 0;
 
-  const handleItemPurchase = async () => {};
+  const handleItemPurchase = async () => {
+    const requiredHp = parseFloat(price.toString()); // Gerekli HP miktarı
+
+    // HP yeterli değilse uyarı göster ve işlemi durdur
+    if (ton_amount < requiredHp) {
+      error(t("not_enough_ton"));
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:8000/purchase_item",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            item_name: item_name,
+            item_slug: item_slug, // Örnek slug, gerekirse dinamik hale getirin
+            reputation_points: reputation_points,
+            buyer_telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
+            ton_amount: requiredHp, // Satın alma için gerekli HP miktarı
+            item_id: id,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Purchase failed");
+
+      const data = await response.json();
+      console.log(data);
+      
+      success(t("buy_success_message"));
+
+      setIsPurchased(true);
+    } catch (err) {
+      error(t("buy_errorn_message"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -75,7 +120,7 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
             <button
               className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm flex items-center justify-center"
               onClick={handleItemPurchase}
-              disabled={loading || isPurchased || ton_amount < 200}
+              disabled={loading || isPurchased || ton_amount < price}
             >
               {loading ? (
                 <ClipLoader color="#ffffff" size={20} />
@@ -86,7 +131,7 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
               )}
             </button>
           </div>
-          {ton_amount < 200 && (
+          {ton_amount < price && (
             <p className="text-xs text-red-500 mt-2">{t("not_enough_ton")}</p>
           )}
         </div>

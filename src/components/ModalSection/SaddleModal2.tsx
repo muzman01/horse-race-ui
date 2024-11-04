@@ -3,21 +3,67 @@ import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { greenSaddleIcon } from "../../images";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ClipLoader from "react-spinners/ClipLoader";
 
 import { RootState } from "../../store";
+import useToast from "../../hooks/useToast";
+import { updateUser } from "../../store/slices/userSlice";
 
 const SaddleModal2 = ({ title }: { title: string }) => {
-  const [isPurchased] = useState(false);
-  const [loading] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
+  const { success, error } = useToast();
   const user = useSelector((state: RootState) => state.user.user);
-
+  const telegram_id = useSelector(
+    (state: RootState) => state?.user?.user?.telegram_id
+  );
   const ton_amount = user?.ton_amount || 0;
 
-  const handleItemPurchase = async () => {};
+  const handleItemPurchase = async () => {
+    const requiredHp = 5; // Gerekli HP miktarı
+
+    // HP yeterli değilse uyarı göster ve işlemi durdur
+    if (ton_amount < requiredHp) {
+      error(t("not_enough_hp"));
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:8000/buy_item_system_ton",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            item_name: title,
+            item_slug: "greenSaddleIcon", // Örnek slug, gerekirse dinamik hale getirin
+            reputation_points: 600,
+            telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
+            ton_amount: 5.0, // Satın alma için gerekli HP miktarı
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Purchase failed");
+
+      const data = await response.json();
+      success(t("buy_success_message"));
+      dispatch(updateUser(data.result)); // Redux'ta kullanıcı bilgisini güncelle
+
+      setIsPurchased(true);
+    } catch (err) {
+      error(t("buy_errorn_message"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>

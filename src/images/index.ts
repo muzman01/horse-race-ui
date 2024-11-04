@@ -23,6 +23,7 @@ import gamePassIcon from "./gamepass.png";
 import crwonIcon from "./icons8-crown-48.png";
 import birinciKral from "./birincikral.png";
 import ucuncuKral from "./3kral.png";
+import donateIcon from "./donateblue.png"
 
 export {
   dailyReward,
@@ -50,4 +51,5 @@ export {
   crwonIcon,
   birinciKral,
   ucuncuKral,
+  donateIcon,
 };

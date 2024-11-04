@@ -4,6 +4,7 @@ import { RootState } from "../../store";
 import { useNavigate, useParams } from "react-router-dom";
 import { cardTable, nullUserIcon } from "../../images";
 import axios from "axios";
+import useToast from "../../hooks/useToast";
 
 const WaitingRoomComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -15,6 +16,7 @@ const WaitingRoomComponent: React.FC = () => {
     (state: RootState) => state?.user?.user?.telegram_id || 0
   );
   const navigate = useNavigate();
+  const { success, error } = useToast();
 
   const [countdown, setCountdown] = useState<number | null>(null);
   const [allReady, setAllReady] = useState(false); // Tüm kullanıcıların hazır olup olmadığını kontrol
@@ -26,14 +28,6 @@ const WaitingRoomComponent: React.FC = () => {
   const table = salon?.tables.find((table) => table.table_id === tableIdNumber);
 
   // Eğer tablo bulunamazsa, bir hata mesajı döndür.
-  if (!table) {
-    return <div>Tablo bulunamadı.</div>;
-  }
-
-  // Kullanıcının kendisini bul
-  const currentPlayer = table.players.find(
-    (player) => player.player_id === telegram_id
-  );
 
   // Masadan ayrılma fonksiyonu
   const handleLeaveTable = async () => {
@@ -44,9 +38,7 @@ const WaitingRoomComponent: React.FC = () => {
           { telegram_id }
         );
         navigate(`/saloon`);
-      } catch (error) {
-        console.error("Masadan ayrılırken hata oluştu:", error);
-      }
+      } catch (er) {}
     } else {
       console.error("Kullanıcı ID'si bulunamadı!");
     }
@@ -60,8 +52,12 @@ const WaitingRoomComponent: React.FC = () => {
           `http://localhost:8000/salons/${salon_id}/tables/${table_id}/ready`,
           { telegram_id }
         );
-      } catch (error) {
-        console.error("Hazır olma durumunu bildirirken hata oluştu:", error);
+        success(
+          "You are ready! The game will start when the other players are ready."
+        );
+      } catch (e) {
+        console.error("Hazır olma durumunu bildirirken hata oluştu:", e);
+        error("You do not have the game pass, please buy it");
       }
     } else {
       console.error("Kullanıcı ID'si bulunamadı!");
@@ -97,7 +93,14 @@ const WaitingRoomComponent: React.FC = () => {
       navigate(`/game/${salon_id}/${table_id}/game-room`);
     }
   }, [allReady, countdown, navigate, salon_id, table_id]);
+  if (!table) {
+    return <div>Tablo bulunamadı.</div>;
+  }
 
+  // Kullanıcının kendisini bul
+  const currentPlayer = table.players.find(
+    (player) => player.player_id === telegram_id
+  );
   // Sadece diğer oyuncuları (sen hariç) göstereceğiz
   const players = table.players
     .filter((player) => player.player_id !== telegram_id) // Kendi oyuncu ID'ni filtrele
@@ -110,6 +113,7 @@ const WaitingRoomComponent: React.FC = () => {
     (player) => player.has_paid
   ).length;
   const totalBet = occupiedSeats * table.bet_amount;
+
   return (
     <div className="flex flex-col items-center gap-4 min-h-screen p-4 bg-gray-900">
       {/* Header Alanı */}

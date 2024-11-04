@@ -22,7 +22,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
 
   const click_score =
     useSelector((state: RootState) => state?.user?.user?.click_score) || 0;
-  const click_power =
+  const base_click_power =
     useSelector((state: RootState) => state?.user?.user?.click_power) || 1;
   const hp_amount =
     useSelector((state: RootState) => state?.user?.user?.hp) || 0;
@@ -33,6 +33,32 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   );
   const user_item =
     useSelector((state: RootState) => state?.user?.user?.items) || [];
+  const boosts: any = useSelector(
+    (state: RootState) => state?.user?.user?.boost
+  );
+
+  // Boost süresini kontrol ederek click_power artırımı uygula
+  const getAdjustedClickPower = () => {
+    if (boosts) {
+      const currentTime = Math.floor(Date.now() / 1000);
+      const boostEndTime = boosts.start_time + boosts.duration_days * 86400;
+      if (currentTime < boostEndTime) {
+        switch (boosts.level) {
+          case 1:
+            return base_click_power + 2;
+          case 2:
+            return base_click_power + 10;
+          case 3:
+            return base_click_power + 20;
+          default:
+            return base_click_power;
+        }
+      }
+    }
+    return base_click_power;
+  };
+
+  const click_power = getAdjustedClickPower();
 
   // Reputation puanlarının hesaplanması
   const reputation_points =
@@ -83,7 +109,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
     dots: false,
     infinite: false,
     speed: 300,
-    slidesToShow: 3, // Aynı anda 3 item göster
+    slidesToShow: 3,
     slidesToScroll: 1,
     arrows: true,
   };
@@ -114,7 +140,9 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
       <div className="flex justify-between mt-2">
         <div className="flex w-full gap-1 items-center">
           <span className="text-[15px]">{t("level")}</span>
-          <span className="text-[15px] font-semibold">0</span>
+          <span className="text-[15px] font-semibold">
+            {boosts ? boosts.level : 0}
+          </span>
         </div>
         <div className="flex w-full items-end justify-end">
           <BoostComponent />
@@ -125,15 +153,13 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
       <div className="flex flex-col items-center opacity-90 mt-12 w-full">
         <div className="text-lg font-bold text-[#f5a623]">{t("inventory")}</div>
         <div className="flex justify-center w-full mt-8">
-          <Slider {...sliderSettings} className="w-full max-w-md">
+          <Slider {...sliderSettings} className="w-full max-w-xs">
             {user_item.map((item: any, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center text-center gap-1"
-                style={{ width: "80px" }} // Sabit genişlik verildi
+                style={{ width: "80px" }}
               >
-                {/* Görsel */}
-
                 <SellItemModa
                   item_name={item.item_name}
                   item_slug={item.item_slug}

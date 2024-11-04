@@ -1,24 +1,81 @@
-import { useState } from "react";
 import { Rocket } from "react-ionicons";
 import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { useTranslation } from "react-i18next"; // i18n kullanımı için import
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import useToast from "../../hooks/useToast";
+import { setUser } from "../../store/slices/userSlice";
 
 const BoostComponent = () => {
-  const [isConnected, setIsConnected] = useState(false);
   const { t } = useTranslation(); // i18n'den metinleri almak için
+  const { success, error } = useToast();
+  const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(false); // Yüklenme durumu için
+  const telegram_id: any = useSelector(
+    (state: RootState) => state?.user?.user?.telegram_id
+  );
+  const boosts: any = useSelector(
+    (state: RootState) => state?.user?.user?.boost
+  );
+  const user = useSelector((state: RootState) => state.user.user);
 
-  const handleBoostPurchase = (level: number) => {
-    // Boost satın alma işlemi
-    console.log(level);
+  const ton_amount = user?.ton_amount || 0;
+  const hp_amount = user?.hp || 0;
+  const currentBoostLevel = boosts?.level || 0; // Mevcut boost seviyesini al
+  const fetchUser = async () => {
+    const response: any = await fetch(
+      `http://localhost:8000/users/${telegram_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+    dispatch(setUser(data.result));
   };
+  const handleBoostPurchase = async (level: number) => {
+    const boostData: any | undefined = {
+      1: { currency_type: "hp", amount: 100 },
+      2: { currency_type: "ton", amount: 5 },
+      3: { currency_type: "ton", amount: 15 },
+    }[level];
 
-  const handleConnect = () => {
-    setIsConnected(true);
+    if (!boostData) return; // Geçersiz seviye varsa çıkış yap
+
+    setLoading(true); // Yüklenme durumu başlat
+    try {
+      const response: any = await fetch("http://localhost:8000/apply_boost", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          telegram_id: telegram_id,
+          requested_level: level,
+          ...boostData,
+        }),
+      });
+
+      if (response.ok) {
+        success("Boost implemented successfully");
+        fetchUser();
+      } else {
+        error("Boost application failed.");
+      }
+    } catch (error: any) {
+      error("Boost application failed.");
+    } finally {
+      setLoading(false); // Yüklenme durumunu durdur
+    }
   };
 
   return (
-    <div className="flex w-full items-end justify-end ">
+    <div className="flex w-full items-end justify-end">
       <Modal
         header={<ModalHeader>{t("boost_options")}</ModalHeader>}
         trigger={
@@ -45,12 +102,26 @@ const BoostComponent = () => {
               </p>
               <p className="text-xs text-gray-400">{t("cost")}: 100 HP</p>
             </div>
-            <button
-              className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
-              onClick={() => handleBoostPurchase(1)}
-            >
-              {t("buy")}
-            </button>
+            {currentBoostLevel === 1 ? (
+              <span className="text-green-500 font-semibold">
+                {t("active")}
+              </span>
+            ) : (
+              <div>
+                <button
+                  className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
+                  onClick={() => handleBoostPurchase(1)}
+                  disabled={loading || currentBoostLevel > 0 || hp_amount < 100}
+                >
+                  {loading ? t("loading") : t("buy")}
+                </button>
+                {hp_amount < 100 && (
+                  <p className="text-xs text-red-500 mt-2">
+                    {t("not_enough_hp")}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Boost Level 2 */}
@@ -62,12 +133,26 @@ const BoostComponent = () => {
               </p>
               <p className="text-xs text-gray-400">{t("cost")}: 5 TON</p>
             </div>
-            <button
-              className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
-              onClick={() => handleConnect()}
-            >
-              {isConnected ? t("buy") : t("connect")}
-            </button>
+            {currentBoostLevel === 2 ? (
+              <span className="text-green-500 font-semibold">
+                {t("active")}
+              </span>
+            ) : (
+              <div>
+                <button
+                  className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
+                  onClick={() => handleBoostPurchase(2)}
+                  disabled={loading || currentBoostLevel >= 2 || ton_amount < 5}
+                >
+                  {loading ? t("loading") : t("buy")}
+                </button>
+                {ton_amount < 5 && (
+                  <p className="text-xs text-red-500 mt-2">
+                    {t("not_enough_ton")}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Boost Level 3 */}
@@ -79,12 +164,28 @@ const BoostComponent = () => {
               </p>
               <p className="text-xs text-gray-400">{t("cost")}: 15 TON</p>
             </div>
-            <button
-              className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
-              onClick={() => handleConnect()}
-            >
-              {isConnected ? t("buy") : t("connect")}
-            </button>
+            {currentBoostLevel === 3 ? (
+              <span className="text-green-500 font-semibold">
+                {t("active")}
+              </span>
+            ) : (
+              <div>
+                <button
+                  className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm"
+                  onClick={() => handleBoostPurchase(3)}
+                  disabled={
+                    loading || currentBoostLevel >= 3 || ton_amount < 15
+                  }
+                >
+                  {loading ? t("loading") : t("buy")}
+                </button>
+                {ton_amount < 15 && (
+                  <p className="text-xs text-red-500 mt-2">
+                    {t("not_enough_ton")}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Modal>

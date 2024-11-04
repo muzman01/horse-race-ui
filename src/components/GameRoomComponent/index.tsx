@@ -81,6 +81,18 @@ const GameRoomComponent: React.FC = () => {
     };
   }, []);
 
+  // Countdown işlemi
+  useEffect(() => {
+    if (countdown > 0) {
+      const interval = setInterval(() => setCountdown(countdown - 1), 1000);
+      return () => clearInterval(interval);
+    } else {
+      // Countdown bittiğinde handleRollDice'ı tetikler ve countdown'u resetleriz.
+      handleRollDice();
+      setCountdown(10);
+    }
+  }, [countdown]);
+
   // Oyun başlatıldığında backend'e mesaj gönderme
   const startGame = () => {
     if (ws && isConnected && table) {
@@ -109,7 +121,7 @@ const GameRoomComponent: React.FC = () => {
     const roll = Math.floor(Math.random() * 6) + 1; // 1 ile 6 arasında zar atıyoruz
     setCurrentRoll(roll); // Mevcut zarı güncelle
     setPreviousRolls((prev) => [...prev, roll]); // Sizin zarları güncelle
-    setCountdown(10); // Zar atıldıktan sonra geri sayımı resetle
+    setCountdown(500); // Zar atıldıktan sonra geri sayımı resetle
 
     // Eğer WebSocket bağlıysa, kendi zarınızı gönderin
     if (ws) {
@@ -153,30 +165,6 @@ const GameRoomComponent: React.FC = () => {
     setRandomRolls(newRandomRolls); // Rastgele zar değerlerini güncelle
   };
 
-  // Masayı boşaltma işlemi
-  // const leaveTable = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8000/salons/${salon_id}/tables/${table_id}/leave`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ telegram_id }),
-  //       }
-  //     );
-  //     if (response.ok) {
-  //       console.log("Masa boşaltıldı, salona yönlendiriliyor.");
-  //       navigate("/salon"); // Salona yönlendir
-  //     } else {
-  //       console.error("Masa boşaltma başarısız oldu.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Masa boşaltılırken hata oluştu:", error);
-  //   }
-  // };
-
   const onClose = () => {
     // winner state'ini null yaparak modalı kapat
     setWinner(null);
@@ -206,14 +194,15 @@ const GameRoomComponent: React.FC = () => {
       <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-3">
           {table.players.map((player: any, index: any) => {
-            const HorseComponent = horses[index % horses.length]; // Her oyuncuya bir at veririz (sıralı şekilde döner)
-            const isMyHorse = player.player_id === telegram_id; // Kendi atını bulmak için
+            const HorseComponent = horses[index % horses.length];
+            const isMyHorse = player.player_id === telegram_id;
+
             const diceValue = isMyHorse
-              ? currentRoll || 0 // Eğer oyuncu sizseniz zar değeri `currentRoll` olacak
+              ? previousRolls.reduce((sum, roll) => sum + roll, 0)
               : (randomRolls[player.player_id] || []).reduce(
                   (sum, roll) => sum + roll,
                   0
-                ); // Diğer oyuncular için toplam zar
+                );
 
             return (
               <div
@@ -222,7 +211,7 @@ const GameRoomComponent: React.FC = () => {
               >
                 <div
                   className="relative w-full h-24 rounded-md shadow-md bg-cover bg-center"
-                  ref={horseAreaRef} // Atın bulunduğu alanın genişliğini almak için referans
+                  ref={horseAreaRef}
                   style={{
                     backgroundImage: `url(${cardTable})`,
                     backgroundPosition: "center",
@@ -233,21 +222,25 @@ const GameRoomComponent: React.FC = () => {
                     <span className="text-yellow-400 font-semibold">
                       {horseAreaRef.current && (
                         <HorseComponent
-                          diceValue={diceValue} // Her oyuncu için doğru zar değerini göster
-                          parentWidth={horseAreaRef?.current?.offsetWidth} // Genişliği prop olarak geçiyoruz
+                          diceValue={diceValue}
+                          parentWidth={horseAreaRef?.current?.offsetWidth}
                         />
                       )}
                     </span>
                   </div>
-                  <span className="absolute bottom-2 left-2 text-white">
-                    Owner: {player.player_id}
-                    {isMyHorse && (
-                      <span className="ml-2 text-yellow-400">
-                        {" "}
-                        - Your Horse!!
-                      </span>
-                    )}
-                  </span>
+                  <div className="absolute bottom-2 left-2 w-full flex justify-between items-center px-4">
+                    <span className="text-white">
+                      {isMyHorse ? (
+                        <span className="ml-2 text-yellow-400">
+                          {" "}
+                          Your Horse!!
+                        </span>
+                      ) : (
+                        <>Owner: {player.player_id}</>
+                      )}
+                    </span>
+                    <span className="text-white">Total Dice: {diceValue}</span>
+                  </div>
                 </div>
               </div>
             );
@@ -258,7 +251,7 @@ const GameRoomComponent: React.FC = () => {
       {/* Oyun Alanı ve Zar Atma Bölgesi */}
       <div className="relative w-full mt-4 p-6 bg-[#5e1f1f] rounded-md border border-gray-700 shadow-md flex justify-center">
         <div
-          className="w-full flex-col h-[400px] bg-cover bg-center rounded-md flex justify-center items-center relative"
+          className="w-full flex-col h-[300px] bg-cover bg-center rounded-md flex justify-center items-center relative"
           style={{
             backgroundImage: `url(${cardTable})`,
             backgroundPosition: "center",
@@ -309,22 +302,6 @@ const GameRoomComponent: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Diğer Oyuncuların Durumu - Arka Planda */}
-          <div className="w-full p-4 bg-gray-700 bg-opacity-50 shadow-md">
-            <h3 className="text-white text-lg mb-2">Other Jokeys</h3>
-            <ul className="text-yellow-400 text-sm">
-              {table.players.map((player: any, index: any) => (
-                <li key={index}>
-                  Jokey {player.player_id}: Zarlardan Toplam ={" "}
-                  {(randomRolls[player.player_id] || []).reduce(
-                    (sum, roll) => sum + roll,
-                    0
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </div>

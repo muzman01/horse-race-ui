@@ -41,6 +41,11 @@ export const userSlice = createSlice({
         state.user.click_score = (state.user.click_score ?? 0) + action.payload;
       }
     },
+    updateTonAmount(state, action: PayloadAction<number>) {
+      if (state.user) {
+        state.user.ton_amount = (state.user.ton_amount ?? 0) + action.payload;
+      }
+    },
     updateClickPower(state, action: PayloadAction<number>) {
       if (state.user) {
         state.user.click_power = action.payload;
@@ -72,6 +77,7 @@ export const {
   setError,
   updateClickScore,
   updateClickPower,
+  updateTonAmount
 } = userSlice.actions;
 
 export default userSlice.reducer;
