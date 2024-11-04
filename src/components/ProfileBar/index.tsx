@@ -1,7 +1,16 @@
 import { Link } from "react-router-dom";
 import Settings from "../../icons/Settings";
+import { useTranslation } from "react-i18next"; // i18n kullanımı için import
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 const ProfileBar = () => {
+  const { t } = useTranslation(); // i18n'den metinleri almak için
+  const user_name = useSelector(
+    (state: RootState) => state?.user?.user?.username
+  );
+  const ton_amount =
+    useSelector((state: RootState) => state?.user?.user?.ton_amount) || 0;
   return (
     <div className="px-4 z-10 flex flex-row w-full justify-between items-center ">
       <div
@@ -9,22 +18,23 @@ const ProfileBar = () => {
         data-aos="fade-right"
       >
         <div>
-          <p className="text-sm">User Test (Jockey) </p>
+          <p className="text-sm">{user_name} (Jockey) </p> {/* Kullanıcı adı */}
         </div>
       </div>
       <div
-        className="flex  items-center w-full gap-1 justify-end space-x-4 mt-3"
+        className="flex items-center w-full gap-1 justify-end space-x-4 mt-3"
         data-aos="fade-right"
       >
         <div
           className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64"
           data-aos="fade-left"
         >
-          <div className="text-xs text-[#c25918]">Total Hp</div>
+          <div className="text-xs text-[#c25918]">{t("total_ton")}</div>{" "}
+          {/* Toplam HP */}
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
           <div className="flex-1 text-center items-center">
-            <div className="text-sm flex  items-center justify-center gap-1 text-[#85827d] font-medium">
-              1000 HP
+            <div className="text-sm flex items-center justify-center gap-1 text-[#85827d] font-medium">
+              {ton_amount} TON
             </div>
           </div>
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
@@ -33,7 +43,6 @@ const ProfileBar = () => {
           </Link>
         </div>
       </div>
-
       {/* TRX fiyatını göstermek için ekleme */}
     </div>
   );

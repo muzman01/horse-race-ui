@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { Rocket } from "react-ionicons";
-import { Modal, Placeholder } from "@telegram-apps/telegram-ui";
+import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 
 const TaskInfoModal = () => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import TaskInfoModal from "../ModalSection/TaskInfoModal";
@@ -10,7 +10,7 @@ const TaskComponent = () => {
   );
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const referralLink = `https://t.me/deneme?start=${telegram_id}`;
+  const referralLink = `https://t.me/horse_race_muzman_bot?start=${telegram_id}`;
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopySuccess(true);
@@ -172,3 +172,6 @@ const TaskComponent = () => {
 };
 
 export default TaskComponent;
+
+//https://web.telegram.org/a/#7886384024
+//7886384024:AAEDP6M8SITns6MIXz7mJGJ0z-77vCPFMJo

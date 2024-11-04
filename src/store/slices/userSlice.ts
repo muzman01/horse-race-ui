@@ -29,6 +29,9 @@ export const userSlice = createSlice({
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
+    updateUser(state, action: PayloadAction<User>) {
+      state.user = { ...state.user, ...action.payload };
+    },
     setError(state, action: PayloadAction<string>) {
       state.error = action.payload;
       state.loading = false;
@@ -64,6 +67,7 @@ export const userSlice = createSlice({
 export const {
   setUser,
   clearUser,
+  updateUser,
   setLoading,
   setError,
   updateClickScore,

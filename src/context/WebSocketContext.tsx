@@ -67,6 +67,8 @@ export const WebSocketProvider: React.FC<{
 
       ws.onclose = (event) => {
         wsRef.current = null;
+        console.log(event);
+
         clearInterval(pingIntervalRef.current);
       };
 

@@ -30,6 +30,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await dispatch(fetchUser(staticUser)); // async dispatch
+      console.log(result);
     };
 
     fetchData(); // Fetch user'ı çağır

@@ -17,6 +17,12 @@ import diceImage3 from "./Dice3.png";
 import diceImage4 from "./Dice4.png";
 import diceImage5 from "./Dice5.png";
 import diceImage6 from "./Dice6.png";
+import saddleIcon from "./saddle.png";
+import greenSaddleIcon from "./greenSaddle.png";
+import gamePassIcon from "./gamepass.png";
+import crwonIcon from "./icons8-crown-48.png";
+import birinciKral from "./birincikral.png";
+import ucuncuKral from "./3kral.png";
 
 export {
   dailyReward,
@@ -37,5 +43,11 @@ export {
   diceImage3,
   diceImage4,
   diceImage5,
-  diceImage6
+  diceImage6,
+  saddleIcon,
+  greenSaddleIcon,
+  gamePassIcon,
+  crwonIcon,
+  birinciKral,
+  ucuncuKral,
 };

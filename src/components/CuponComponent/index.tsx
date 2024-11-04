@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import BlackHorseNoDice from "../Horses/BlackHorseNoDice";
-import WhiteHorseNoDice from "../Horses/WhiteHorseNoDice";
-import YellowHorseNodice from "../Horses/YellowHorseNodice";
 import HorsesContainer from "../Horses/HorsesContainer";
 
 const horseNames = [
@@ -109,6 +106,11 @@ const CuponComponent = () => {
       {/* Bet Slip Area */}
       <div className="w-full text-gray-300 max-w-md bg-[#212121] rounded-lg p-6 shadow-lg space-y-6">
         {/* Horse Selection Radio Buttons */}
+        <div className="absolute inset-0 flex items-center justify-center bg-opacity-60 bg-black rounded-lg">
+          <span className="text-4xl font-bold text-[#c25918] opacity-70 transform rotate-45">
+            Coming Soon
+          </span>
+        </div>
         {["First", "Second", "Third", "Fourth", "Fifth", "Sixth"].map(
           (label, index) => (
             <div

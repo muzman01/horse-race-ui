@@ -1,7 +1,7 @@
-import { FiRefreshCcw } from "react-icons/fi";
 import { FaMedal, FaShieldAlt, FaTrophy, FaCoins, FaGem } from "react-icons/fa";
 import TableComponent from "./TableComponent";
 import { Salon } from "../../types/salon";
+import { gamePassIcon } from "../../images";
 
 interface SalonProps {
   salon: Salon;
@@ -34,14 +34,15 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
           <h2 className="text-white text-2xl font-bold">{salon.name}</h2>
         </div>
 
-        <div className="flex items-center space-x-2 text-gray-400">
-          <FiRefreshCcw className="text-green-500" />
-          <span className="text-sm"> 5sn ago</span>
+        <div className="flex items-center text-sm space-x-2 text-gray-400">
+          Game Fee: {salon.salon_id === 1 ? "%20" : "%15"}
         </div>
       </div>
 
-      <p className="text-gray-400 mb-4">Enter Fee: {salon.entry_fee} TON</p>
-
+      <div className="flex flex-row gap-1">
+        <p className="text-gray-400 mb-4">Enter Fee: {salon.entry_fee} </p>
+        <img src={gamePassIcon} alt="gamepass" className="w-6 h-6" />
+      </div>
       {/* Masaları listeleme */}
       <div className="flex overflow-x-auto gap-4 p-2">
         {salon.tables.map((table) => (

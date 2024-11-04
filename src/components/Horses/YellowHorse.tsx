@@ -13,10 +13,9 @@ const YellowHorse = ({ diceValue }: any) => {
   const parentWidth = 320; // Parent genişliği
 
   const [currentSpriteIndex, setCurrentSpriteIndex] = useState(0);
-  const [currentPosition, setCurrentPosition] = useState(0); // Başlangıç pozisyonu 0
-  const maxSteps = 36; // Maksimum adım sayısı (6 zar atışında 36 adım)
-  const partWidth = parentWidth / maxSteps; // Her parçanın genişliği
-
+  const [currentPosition, setCurrentPosition] = useState(0); // Başlangıç pozisyonu
+  const totalParts = 36; // Alanı 36 parçaya böleceğiz
+  const partWidth = parentWidth / totalParts; // Her parçanın genişliği
 
   // Atı hareket ettirmek için zar değerini kullan
   const moveSprite = (diceValue: any) => {
@@ -26,7 +25,7 @@ const YellowHorse = ({ diceValue }: any) => {
     });
   };
 
-  // Zar değeri değiştiğinde atı hareket ettir
+  // Zar değeri değiştiğinde, atı hareket ettir
   useEffect(() => {
     if (diceValue > 0) {
       moveSprite(diceValue);
@@ -46,7 +45,14 @@ const YellowHorse = ({ diceValue }: any) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="sprite-container" style={{ width: `${parentWidth}px` }}>
+      <div
+        className="sprite-container"
+        style={{
+          width: `${parentWidth}px`,
+          height: "48px",
+          position: "relative",
+        }}
+      >
         <div
           className="sprite-move"
           style={{ left: `${currentPosition}px`, position: "absolute", top: 0 }} // Pozisyonu dinamik olarak ayarladık

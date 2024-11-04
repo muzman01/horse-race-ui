@@ -45,7 +45,14 @@ const WhiteHorse = ({ diceValue }: any) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="sprite-container" style={{ width: `${parentWidth}px` }}>
+      <div
+        className="sprite-container"
+        style={{
+          width: `${parentWidth}px`,
+          height: "48px",
+          position: "relative",
+        }}
+      >
         <div
           className="sprite-move"
           style={{ left: `${currentPosition}px`, position: "absolute", top: 0 }} // Pozisyonu dinamik olarak ayarladık

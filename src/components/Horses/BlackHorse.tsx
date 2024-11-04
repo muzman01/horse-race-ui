@@ -11,19 +11,21 @@ const spriteImages = [
 
 const BlackHorse = ({ diceValue }: any) => {
   const parentWidth = 320; // Parent genişliği
+
   const [currentSpriteIndex, setCurrentSpriteIndex] = useState(0);
   const [currentPosition, setCurrentPosition] = useState(0); // Başlangıç pozisyonu
-  const totalParts = 36; // Alanı 36 parçaya bölüyoruz
+  const totalParts = 36; // Alanı 36 parçaya böleceğiz
   const partWidth = parentWidth / totalParts; // Her parçanın genişliği
 
-  // Zar değeri değiştiğinde atı hareket ettir
+  // Atı hareket ettirmek için zar değerini kullan
   const moveSprite = (diceValue: any) => {
     setCurrentPosition((prevPosition) => {
       const newPosition = prevPosition + diceValue * partWidth;
-      return Math.min(newPosition, parentWidth - 64); // At 64px genişliğinde olduğu için sınır koyduk
+      return Math.min(newPosition, parentWidth - 64); // Atın genişliği 64px olduğu için sınır koyuyoruz
     });
   };
 
+  // Zar değeri değiştiğinde, atı hareket ettir
   useEffect(() => {
     if (diceValue > 0) {
       moveSprite(diceValue);
@@ -40,7 +42,6 @@ const BlackHorse = ({ diceValue }: any) => {
 
     return () => clearInterval(interval); // Temizleme işlemi
   }, []);
-
   return (
     <div className="flex flex-col items-center">
       <div

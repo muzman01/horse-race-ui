@@ -154,32 +154,33 @@ const GameRoomComponent: React.FC = () => {
   };
 
   // Masayı boşaltma işlemi
-  const leaveTable = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/salons/${salon_id}/tables/${table_id}/leave`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ telegram_id }),
-        }
-      );
-      if (response.ok) {
-        console.log("Masa boşaltıldı, salona yönlendiriliyor.");
-        navigate("/salon"); // Salona yönlendir
-      } else {
-        console.error("Masa boşaltma başarısız oldu.");
-      }
-    } catch (error) {
-      console.error("Masa boşaltılırken hata oluştu:", error);
-    }
-  };
+  // const leaveTable = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8000/salons/${salon_id}/tables/${table_id}/leave`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ telegram_id }),
+  //       }
+  //     );
+  //     if (response.ok) {
+  //       console.log("Masa boşaltıldı, salona yönlendiriliyor.");
+  //       navigate("/salon"); // Salona yönlendir
+  //     } else {
+  //       console.error("Masa boşaltma başarısız oldu.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Masa boşaltılırken hata oluştu:", error);
+  //   }
+  // };
 
   const onClose = () => {
     // winner state'ini null yaparak modalı kapat
     setWinner(null);
+    navigate(`/saloon`);
   };
 
   if (!table) {

@@ -1,34 +1,49 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import { RootState } from "../../store"; // Redux store türünü import et
+import { RootState } from "../../store";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Coins from "../../icons/Coins";
-import { BiRocket } from "react-icons/bi";
-import { dollarIcon, mainLogo } from "../../images";
+import { dollarIcon, mainLogo, gamePassIcon } from "../../images";
 import { updateClickScore } from "../../store/slices/userSlice";
-import { Rocket } from "react-ionicons";
-import { Button, Modal, Placeholder } from "@telegram-apps/telegram-ui";
-import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import BoostComponent from "./BoostComponent";
+import { useTranslation } from "react-i18next";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import SellItemModa from "../ModalSection/SellItemModa";
 
 interface HomeContainerProps {
-  sendMessage: (message: any) => void; // WebSocket mesaj gönderme fonksiyonu prop olarak alınıyor
+  sendMessage: (message: any) => void;
 }
 
 const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
-  // Redux'tan click_score ve click_power değerlerini alıyoruz
   const click_score =
     useSelector((state: RootState) => state?.user?.user?.click_score) || 0;
   const click_power =
-    useSelector((state: RootState) => state?.user?.user?.click_power) || 1; // Varsayılan olarak 1 kullan
+    useSelector((state: RootState) => state?.user?.user?.click_power) || 1;
+  const hp_amount =
+    useSelector((state: RootState) => state?.user?.user?.hp) || 0;
+  const game_pass =
+    useSelector((state: RootState) => state?.user?.user?.game_pass) || 0;
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
-  const [convertAmount, setConvertAmount] = useState<string>("");
+  const user_item =
+    useSelector((state: RootState) => state?.user?.user?.items) || [];
+
+  // Reputation puanlarının hesaplanması
+  const reputation_points =
+    useSelector((state: RootState) => state?.user?.user?.reputation_points) ||
+    0;
+  const total_reputation_points =
+    reputation_points +
+    user_item.reduce(
+      (total: number, item: any) => total + (item.reputation_points || 0),
+      0
+    );
 
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
@@ -50,102 +65,116 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
       card.style.transform = "";
     }, 100);
 
-    // Redux'ta click_score'u güncelle
-    dispatch(updateClickScore(click_power)); // Her click'te click_power kadar puan ekle
+    dispatch(updateClickScore(click_power));
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
 
-    // WebSocket üzerinden sunucuya mesaj gönder
     sendMessage({
       action: "click",
-      click_power: click_power, // Redux'tan alınan click_power ile mesaj gönder
-      telegram_id: telegram_id, // Redux'tan alınan telegram_id'yi ekleyin
+      click_power: click_power,
+      telegram_id: telegram_id,
     });
   };
 
   const handleAnimationEnd = (id: number) => {
     setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
-  const handleConvertClick = () => {
-    if (Number(convertAmount) > 0 && Number(convertAmount) <= click_score) {
-      setConvertAmount(""); // Dönüştürme sonrası input temizleniyor
-    }
+
+  const sliderSettings = {
+    dots: false,
+    infinite: false,
+    speed: 300,
+    slidesToShow: 3, // Aynı anda 3 item göster
+    slidesToScroll: 1,
+    arrows: true,
   };
 
   return (
     <div data-aos="zoom-in" className="w-full">
       <div className="px-4 mt-4 flex justify-center">
         <div className="px-4 py-2 flex items-center space-x-2">
-          <img src={dollarIcon} alt="Dollar Coin" className="w-12 h-12" />
-          <p className="text-4xl text-white">
-            {click_score.toLocaleString()}
-          </p>{" "}
-          {/* Redux'tan gelen click_score'u göster */}
+          <img src={dollarIcon} alt={t("dollar_icon")} className="w-12 h-12" />
+          <p className="text-4xl text-white">{click_score.toLocaleString()}</p>
         </div>
       </div>
 
       <div className="px-4 mt-4 flex justify-center">
         <div
-          className="w-80 h-80 p-4 rounded-full circle-outer"
+          className="w-40 h-40 p-4 rounded-full circle-outer"
           onClick={handleCardClick}
         >
           <div className="w-full h-full rounded-full circle-inner">
             <img
               src={mainLogo}
-              alt="Main Character"
+              alt={t("main_character")}
               className="w-full h-full rounded-full"
             />
           </div>
         </div>
       </div>
       <div className="flex justify-between mt-2">
-        <div className="flex w-full gap-1 items-center ">
-          <span className="text-[15px]">Level</span>
+        <div className="flex w-full gap-1 items-center">
+          <span className="text-[15px]">{t("level")}</span>
           <span className="text-[15px] font-semibold">0</span>
         </div>
-        <div className="flex w-full items-end justify-end ">
+        <div className="flex w-full items-end justify-end">
           <BoostComponent />
         </div>
       </div>
-      {/* Convert Alanı */}
-      <div className="flex justify-center w-full opacity-80 mt-12">
-        <div className="flex flex-col items-center  border-[0.3px] border-[#c25918] rounded-lg w-full p-4 bg-[#2b2f36] backdrop-blur-md">
-          <input
-            type="number"
-            placeholder="Amount to HP"
-            className="flex-1 w-full text-center opacity-65 bg-transparent text-white outline-none placeholder-[#c25918]/80 text-sm mb-2 border-b border-[#f5a623]"
-            value={convertAmount}
-            onChange={(e) => setConvertAmount(e.target.value)}
-          />
-          <div className="text-white text-sm mb-2">
-            HP Amount:{" "}
-            <span className="font-semibold">
-              {Number(convertAmount) * 10 || 0}
-            </span>{" "}
-            {/* 1 puan = 10 HP */}
+
+      {/* Envanter Alanı */}
+      <div className="flex flex-col items-center opacity-90 mt-12 w-full">
+        <div className="text-lg font-bold text-[#f5a623]">{t("inventory")}</div>
+        <div className="flex justify-center w-full mt-8">
+          <Slider {...sliderSettings} className="w-full max-w-md">
+            {user_item.map((item: any, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center text-center gap-1"
+                style={{ width: "80px" }} // Sabit genişlik verildi
+              >
+                {/* Görsel */}
+
+                <SellItemModa
+                  item_name={item.item_name}
+                  item_slug={item.item_slug}
+                  reputation_points={item.reputation_points}
+                  id={item.id}
+                  key={index}
+                />
+              </div>
+            ))}
+          </Slider>
+        </div>
+
+        {/* Toplam İtibar Puanı ve HP */}
+        <div className="flex justify-between w-full px-4 py-2 border-t border-[#f5a623] mt-4">
+          <div className="text-white text-xs">
+            {t("reputation_points")}:{" "}
+            <span className="font-bold">{total_reputation_points}</span>
           </div>
-          <button
-            className="bg-[#c25918]/70 text-white px-6 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all"
-            onClick={handleConvertClick}
-            disabled={
-              Number(convertAmount) <= 0 || Number(convertAmount) > click_score
-            }
-          >
-            Convert
-          </button>
+          <div className="text-white text-xs">
+            {t("HP")}: <span className="font-bold">{hp_amount}</span>
+          </div>
+          <div className="text-white text-xs flex flex-row">
+            <span className="font-bold">GP: </span>
+            <img src={gamePassIcon} alt="gamepass" className="w-4 h-4" />
+            <span>{game_pass}</span>
+          </div>
         </div>
       </div>
+
       {clicks.map((click) => (
         <div
           key={click.id}
-          className="absolute text-5xl font-bold opacity-0 text-white pointer-events-none"
+          className="absolute text-4xl font-bold opacity-0 text-white pointer-events-none"
           style={{
-            top: `${click.y - 42}px`,
-            left: `${click.x - 28}px`,
+            top: `${click.y - 32}px`,
+            left: `${click.x - 20}px`,
             animation: `float 1s ease-out`,
           }}
           onAnimationEnd={() => handleAnimationEnd(click.id)}
         >
-          {click_power} {/* Redux'tan gelen click_power'ı göster */}
+          {click_power}
         </div>
       ))}
     </div>

@@ -1,6 +1,6 @@
+// hooks/useWebSocket.ts
 import { useEffect, useRef } from "react";
 
-// WebSocket hook'u
 const useWebSocket = (
   telegram_id: number | undefined,
   onMessage: (data: any) => void
@@ -8,35 +8,40 @@ const useWebSocket = (
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (!telegram_id) return; // Eğer telegram_id yoksa bağlantı kurma
+    // Eğer telegram_id yoksa bağlantıyı başlatma
+    if (!telegram_id) return;
 
-    const ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL); // .env'den WebSocket URL'sini alıyoruz
-    wsRef.current = ws;
+    const createWebSocket = () => {
+      const ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
+      wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log("WebSocket bağlantısı kuruldu");
-      // İlk bağlantıda telegram_id'yi JSON formatında gönderiyoruz
-      ws.send(JSON.stringify({ telegram_id }));
+      ws.onopen = () => {
+        console.log("WebSocket bağlantısı kuruldu");
+        ws.send(JSON.stringify({ telegram_id })); // İlk bağlantıda telegram_id'yi gönder
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data); // Gelen veriyi parse et
+          console.log("WebSocket'ten gelen veri:", data);
+          onMessage(data); // Gelen veriyi callback ile işliyoruz
+        } catch (error) {
+          console.error("Mesaj parse edilemedi:", error);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket bağlantısı kapandı, yeniden bağlanıyor...");
+        setTimeout(createWebSocket, 1000); // Bağlantı kapandığında yeniden başlat
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket hata:", error);
+      };
     };
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data); // Gelen veriyi parse et
-        console.log("WebSocket'ten gelen veri:", data);
-        onMessage(data); // Gelen veriyi callback ile işliyoruz
-      } catch (error) {
-        console.error("Mesaj parse edilemedi:", error);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket bağlantısı kapandı");
-      wsRef.current = null;
-    };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket hata:", error);
-    };
+    // WebSocket bağlantısını başlat
+    createWebSocket();
 
     // Bileşen unmount olduğunda WebSocket'i kapat
     return () => {
@@ -46,14 +51,13 @@ const useWebSocket = (
     };
   }, [telegram_id, onMessage]);
 
-  // Mesaj göndermek için bir fonksiyon döndürelim
   const sendMessage = (message: any) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify(message));
     }
   };
 
-  return { sendMessage }; // WebSocket ile mesaj göndermek için döndür
+  return { sendMessage };
 };
 
 export default useWebSocket;

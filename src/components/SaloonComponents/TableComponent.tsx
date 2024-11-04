@@ -4,6 +4,7 @@ import { Table } from "../../types/salon";
 import { RootState } from "../../store";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useToast from "../../hooks/useToast";
 
 interface TableProps {
   table: Table;
@@ -14,9 +15,28 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
+  const game_pass: any = useSelector(
+    (state: RootState) => state?.user?.user?.game_pass
+  ); // Kullanıcının game_pass bilgisini Redux'tan alıyoruz.
   const navigate = useNavigate();
+  const { warning } = useToast();
+
+  const gamePassRequirements: { [key: number]: number } = {
+    1: 1,
+    2: 3,
+    3: 5,
+    4: 10,
+    5: 15,
+  };
 
   const handleJoinTable = async (table_id: number) => {
+    const requiredPass = gamePassRequirements[salon_id];
+
+    if (game_pass < requiredPass) {
+      warning("Yeterli game pass hakkınız yok!");
+      return; // Yeterli pass yoksa işlemi durduruyoruz.
+    }
+
     if (telegram_id) {
       try {
         await axios.post(
@@ -62,7 +82,7 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
 
   return (
     <div
-      className="bg-[#5e1f1f] p-6 rounded-lg w-full max-w-sm flex flex-col items-center shadow-lg relative min-w-[300px] min-h-[250px]" // min-height düzenlendi ve genişlik optimize edildi
+      className="bg-[#5e1f1f] p-6 rounded-lg w-full max-w-sm flex flex-col items-center shadow-lg relative min-w-[300px] min-h-[250px]"
       style={{
         background: "linear-gradient(145deg, #922f2f, #481111)",
         boxShadow:
@@ -76,7 +96,7 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
       />
 
       <div className="text-center text-lg text-white mb-4 font-bold">
-        Table {table.table_id}
+        {occupiedSeats === maxSeats ? "Full" : "Available"}
       </div>
 
       <div className="flex justify-around w-full mb-4 space-x-4">
@@ -133,10 +153,6 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
         >
           Join Table
         </button>
-      )}
-
-      {occupiedSeats === maxSeats && (
-        <div className="text-white font-bold text-lg">Masa Full</div>
       )}
 
       {occupiedSeats > 0 && (
