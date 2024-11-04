@@ -19,7 +19,7 @@ setBackgroundAsSecondary();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <TonConnectUIProvider manifestUrl="https://https://horse-race-ui.vercel.app/tonconnect-manifest.json">
+    <TonConnectUIProvider manifestUrl="https://horse-race-ui.vercel.app/tonconnect-manifest.json">
       <AppRoot>
         {" "}
         {/* Uygulamanın en dış katmanına AppRoot bileşenini ekliyoruz */}
