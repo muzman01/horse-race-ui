@@ -33,7 +33,7 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
     const requiredPass = gamePassRequirements[salon_id];
 
     if (game_pass < requiredPass) {
-      warning("Yeterli game pass hakkınız yok!");
+      warning("You do not have enough Game Passes.");
       return; // Yeterli pass yoksa işlemi durduruyoruz.
     }
 

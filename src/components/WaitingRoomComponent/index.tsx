@@ -94,7 +94,7 @@ const WaitingRoomComponent: React.FC = () => {
     }
   }, [allReady, countdown, navigate, salon_id, table_id]);
   if (!table) {
-    return <div>Tablo bulunamadı.</div>;
+    return <div>Loading.</div>;
   }
 
   // Kullanıcının kendisini bul

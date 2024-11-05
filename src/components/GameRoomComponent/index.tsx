@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { useParams, useNavigate } from "react-router-dom"; // useNavigate eklendi
+import { useParams, useNavigate } from "react-router-dom";
 import { cardTable } from "../../images";
 import DiceComponent from "../DiceComponent";
 import YellowHorse from "../Horses/YellowHorse";
 import WhiteHorse from "../Horses/WhiteHorse";
 import BlackHorse from "../Horses/BlackHorse";
 import RedHorse from "../Horses/RedHorse";
-import Confetti from "react-confetti"; // Confetti paketi eklendi
+import Confetti from "react-confetti";
 
-const MAX_ROLLS = 5; // Maksimum zar sayısı
+const MAX_ROLLS = 5;
 
 const GameRoomComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -20,20 +20,25 @@ const GameRoomComponent: React.FC = () => {
   const { salons } = useSelector((state: RootState) => state.salon);
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id || 0
-  ); // Kullanıcının Telegram ID'sini alıyoruz
+  );
   const horseAreaRef: any = useRef(null);
-  const navigate = useNavigate(); // Yönlendirme için useNavigate kullanıyoruz
+  const navigate = useNavigate();
 
-  const [countdown, setCountdown] = useState<number>(10); // Zar atma geri sayımı
-  const [currentRoll, setCurrentRoll] = useState<number | null>(null); // Şu anki zar atışı (Başlangıç değeri null)
-  const [previousRolls, setPreviousRolls] = useState<number[]>([]); // Sizin zarlarınız
+  const [countdown, setCountdown] = useState<number>(10);
+  const [currentRoll, setCurrentRoll] = useState<number | null>(null);
+  const [previousRolls, setPreviousRolls] = useState<number[]>([]);
   const [randomRolls, setRandomRolls] = useState<{ [key: number]: number[] }>(
     {}
-  ); // Diğer oyuncuların zarları
-  const [winner, setWinner] = useState<any | null>(null); // Kazanan oyuncu
-  const [confettiVisible, setConfettiVisible] = useState<boolean>(false); // Confetti kontrolü
-  const [ws, setWs] = useState<WebSocket | null>(null); // WebSocket bağlantısı
-  const [isConnected, setIsConnected] = useState<boolean>(false); // WebSocket bağlantı durumu
+  );
+
+  console.log(randomRolls);
+  
+  const [totalRolls, setTotalRolls] = useState<{ [key: number]: number }>({});
+  const [winner, setWinner] = useState<any | null>(null);
+  const [confettiVisible, setConfettiVisible] = useState<boolean>(false);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [diceRollsLeft, setDiceRollsLeft] = useState<number>(MAX_ROLLS);
 
   const salonIdNumber = Number(salon_id);
   const tableIdNumber = Number(table_id);
@@ -43,14 +48,13 @@ const GameRoomComponent: React.FC = () => {
     (table) => table.table_id === tableIdNumber
   );
 
-  // WebSocket bağlantısı başlatma
   useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:9003"); // WebSocket adresi
+    const ws = new WebSocket("ws://127.0.0.1:9003");
     setWs(ws);
 
     ws.onopen = () => {
       console.log("WebSocket bağlantısı açıldı.");
-      setIsConnected(true); // WebSocket bağlantısı açıldığında bağlantı durumunu güncelle
+      setIsConnected(true);
     };
 
     ws.onmessage = (event) => {
@@ -60,11 +64,34 @@ const GameRoomComponent: React.FC = () => {
         if (message.action === "game_started") {
           console.log(`Game started with ID: ${message.game_id}`);
         } else if (message.action === "roll_acknowledged") {
-          console.log(`Player ${message.player_id} rolled a ${message.roll}`);
+          const { player_id, roll } = message;
+          setRandomRolls((prevRolls) => ({
+            ...prevRolls,
+            [player_id]: [...(prevRolls[player_id] || []), roll],
+          }));
         } else if (message.action === "winner_announced") {
           setWinner(message.winner_id);
           setConfettiVisible(true);
-          setTimeout(() => setConfettiVisible(false), 5000);
+          setTimeout(() => setConfettiVisible(false), 10);
+        } else if (message.action === "roll_update") {
+          const updatedRolls = message.players.reduce(
+            (acc: { [key: number]: number[] }, player: any) => {
+              acc[player.player_id] = player.rolls;
+              return acc;
+            },
+            {}
+          );
+
+          const totalRollsUpdate = message.players.reduce(
+            (acc: { [key: number]: number }, player: any) => {
+              acc[player.player_id] = player.total_roll;
+              return acc;
+            },
+            {}
+          );
+
+          setRandomRolls(updatedRolls);
+          setTotalRolls(totalRollsUpdate);
         }
       } catch (e) {
         console.error("Mesaj JSON formatında değil:", event.data);
@@ -73,7 +100,7 @@ const GameRoomComponent: React.FC = () => {
 
     ws.onclose = () => {
       console.log("WebSocket bağlantısı kapandı.");
-      setIsConnected(false); // WebSocket bağlantısı kapandığında bağlantı durumunu güncelle
+      setIsConnected(false);
     };
 
     return () => {
@@ -81,19 +108,16 @@ const GameRoomComponent: React.FC = () => {
     };
   }, []);
 
-  // Countdown işlemi
   useEffect(() => {
-    if (countdown > 0) {
+    if (diceRollsLeft > 0 && countdown > 0) {
       const interval = setInterval(() => setCountdown(countdown - 1), 1000);
       return () => clearInterval(interval);
-    } else {
-      // Countdown bittiğinde handleRollDice'ı tetikler ve countdown'u resetleriz.
+    } else if (countdown === 0 && diceRollsLeft > 0) {
       handleRollDice();
       setCountdown(10);
     }
-  }, [countdown]);
+  }, [countdown, diceRollsLeft]);
 
-  // Oyun başlatıldığında backend'e mesaj gönderme
   const startGame = () => {
     if (ws && isConnected && table) {
       const message = {
@@ -110,20 +134,19 @@ const GameRoomComponent: React.FC = () => {
 
   useEffect(() => {
     if (isConnected) {
-      startGame(); // WebSocket bağlantısı açıldığında oyun başlatma fonksiyonu çağrılır
+      startGame();
     }
   }, [isConnected]);
 
-  // Zar atma işlemi
   const handleRollDice = () => {
-    if (previousRolls.length >= MAX_ROLLS || !isConnected) return; // Eğer 5 zar atılmışsa veya WebSocket bağlantısı yoksa zar atmayı durdur
+    if (diceRollsLeft <= 0 || !isConnected) return;
 
-    const roll = Math.floor(Math.random() * 6) + 1; // 1 ile 6 arasında zar atıyoruz
-    setCurrentRoll(roll); // Mevcut zarı güncelle
-    setPreviousRolls((prev) => [...prev, roll]); // Sizin zarları güncelle
-    setCountdown(500); // Zar atıldıktan sonra geri sayımı resetle
+    const roll = Math.floor(Math.random() * 6) + 1;
+    setCurrentRoll(roll);
+    setPreviousRolls((prev) => [...prev, roll]);
+    setCountdown(10);
+    setDiceRollsLeft(diceRollsLeft - 1); // Zar hakkını azalt
 
-    // Eğer WebSocket bağlıysa, kendi zarınızı gönderin
     if (ws) {
       const message = {
         action: "roll_dice",
@@ -134,63 +157,29 @@ const GameRoomComponent: React.FC = () => {
       };
       ws.send(JSON.stringify(message));
     }
-
-    // Diğer oyunculara rastgele zar değerleri ver ve her biri için ayrı mesaj gönder
-    const newRandomRolls: { [key: number]: number[] } = { ...randomRolls };
-
-    table.players.forEach((player: any) => {
-      if (player.player_id !== telegram_id) {
-        if (!newRandomRolls[player.player_id]) {
-          newRandomRolls[player.player_id] = [];
-        }
-        if (newRandomRolls[player.player_id].length < MAX_ROLLS) {
-          const playerRoll = Math.floor(Math.random() * 6) + 1; // Diğer oyuncular için zar at
-          newRandomRolls[player.player_id].push(playerRoll); // Diğer oyuncuların zarını güncelle
-
-          // WebSocket üzerinden her oyuncunun zarını ayrı bir mesaj olarak gönder
-          if (ws) {
-            const playerMessage = {
-              action: "roll_dice",
-              player_id: player.player_id,
-              roll: playerRoll,
-              salon_id: salon_id,
-              table_id: table_id,
-            };
-            ws.send(JSON.stringify(playerMessage)); // Her oyuncu için ayrı mesaj gönder
-          }
-        }
-      }
-    });
-
-    setRandomRolls(newRandomRolls); // Rastgele zar değerlerini güncelle
   };
 
   const onClose = () => {
-    // winner state'ini null yaparak modalı kapat
     setWinner(null);
     navigate(`/saloon`);
   };
 
   if (!table) {
-    return <div>Tablo bulunamadı.</div>;
+    return <div>Loading</div>;
   }
 
-  // At bileşenleri dizisi
   const horses = [YellowHorse, WhiteHorse, BlackHorse, RedHorse];
 
   return (
     <div className="flex flex-col items-center gap-4 min-h-screen p-4 bg-gray-900">
-      {/* Confetti */}
       {confettiVisible && (
         <Confetti width={window.innerWidth} height={window.innerHeight} />
       )}
 
-      {/* Header Alanı */}
       <div className="w-full h-12 bg-[#5e1f1f] flex items-center justify-center rounded-md shadow-md">
         <h1 className="text-yellow-400 text-lg font-semibold">Game Room</h1>
       </div>
 
-      {/* Atlar ve Sahipleri Alanı */}
       <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-3">
           {table.players.map((player: any, index: any) => {
@@ -199,10 +188,7 @@ const GameRoomComponent: React.FC = () => {
 
             const diceValue = isMyHorse
               ? previousRolls.reduce((sum, roll) => sum + roll, 0)
-              : (randomRolls[player.player_id] || []).reduce(
-                  (sum, roll) => sum + roll,
-                  0
-                );
+              : totalRolls[player.player_id] || 0;
 
             return (
               <div
@@ -248,7 +234,6 @@ const GameRoomComponent: React.FC = () => {
         </div>
       </div>
 
-      {/* Oyun Alanı ve Zar Atma Bölgesi */}
       <div className="relative w-full mt-4 p-6 bg-[#5e1f1f] rounded-md border border-gray-700 shadow-md flex justify-center">
         <div
           className="w-full flex-col h-[300px] bg-cover bg-center rounded-md flex justify-center items-center relative"
@@ -258,35 +243,33 @@ const GameRoomComponent: React.FC = () => {
             backgroundSize: "150%",
           }}
         >
-          {/* Geri Sayım ve Zar Atma Alanı */}
           <div className="flex w-full h-full flex-col items-center justify-center bg-black bg-opacity-50">
-            {/* Geri Sayım */}
             <div className="text-yellow-400 text-2xl mb-4">
-              Zar atmak için: {countdown} saniye
+              {diceRollsLeft > 0
+                ? `To roll the dice: ${countdown} seconds`
+                : "Your dice are over!"}
             </div>
 
-            {/* Zar Atma Butonu */}
             <DiceComponent
               diceResult={currentRoll || 0}
               rollDice={handleRollDice}
             />
 
-            {/* Şu anki zar */}
             <div className="mt-4 text-white text-lg">
-              Şu anki zar:{" "}
-              {currentRoll !== null ? currentRoll : "Henüz zar atılmadı"}
+              Current dice:{" "}
+              {currentRoll !== null
+                ? currentRoll
+                : "The dice are not cast yet."}
             </div>
 
-            {/* Önceki zar sonuçları */}
             <div className="mt-4 text-yellow-400">
-              Önceki zarlar:{" "}
+              Previous dice:{" "}
               {previousRolls.length > 0
                 ? previousRolls.join(", ")
-                : "Henüz zar atılmadı"}
+                : "The dice are not cast yet."}
             </div>
           </div>
 
-          {/* Kazananı Göster */}
           {winner && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white p-8 rounded-lg shadow-lg text-center relative">
@@ -294,10 +277,10 @@ const GameRoomComponent: React.FC = () => {
                   onClick={onClose}
                   className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                 >
-                  &#x2715; {/* Bu kapatma butonunun simgesi */}
+                  &#x2715;
                 </button>
                 <div className="text-green-500 text-2xl mt-4">
-                  Kazanan: {winner === telegram_id ? "Sen!" : `Jokey ${winner}`}
+                  Winner: {winner === telegram_id ? "You!" : `Jokey ${winner}`}
                 </div>
               </div>
             </div>
