@@ -6,6 +6,7 @@ import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import { crwonIcon, birinciKral, ucuncuKral } from "../../images";
 import useToast from "../../hooks/useToast";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface User {
   telegram_id: number;
@@ -22,6 +23,7 @@ const LeaderBoard = () => {
   const { warning } = useToast();
   const [leaderboard, setLeaderboard] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const { handleVibrate } = useTelegram();
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -66,7 +68,10 @@ const LeaderBoard = () => {
       <Modal
         header={<ModalHeader>Reputation Board</ModalHeader>}
         trigger={
-          <div className="bg-[#2b2f36] p-4 rounded-lg flex items-center justify-between">
+          <div
+            onClick={handleVibrate}
+            className="bg-[#2b2f36] p-4 rounded-lg flex items-center justify-between"
+          >
             <p className="text-gray-300">Reputation Board</p>
             <div className="flex items-center space-x-2">
               <img src={crwonIcon} className="w-8 h-8" alt="crown" />

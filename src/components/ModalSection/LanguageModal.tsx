@@ -2,12 +2,14 @@ import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { useTranslation } from "react-i18next"; // i18n'den metinleri almak için
 import { useState } from "react";
+import { useTelegram } from "../../context/TelegramContext";
 
 const LanguageModal = () => {
   const { t, i18n } = useTranslation(); // i18n'den metinleri almak için
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
-
+  const { handleVibrate } = useTelegram();
   const changeLanguage = (lang: string) => {
+    handleVibrate();
     i18n.changeLanguage(lang);
     setSelectedLanguage(lang);
   };
@@ -17,7 +19,10 @@ const LanguageModal = () => {
       <Modal
         header={<ModalHeader>{t("select_language")}</ModalHeader>}
         trigger={
-          <div className="bg-[#2b2f36] p-4 rounded-lg flex items-center justify-between">
+          <div
+            onClick={handleVibrate}
+            className="bg-[#2b2f36] p-4 rounded-lg flex items-center justify-between"
+          >
             <p className="text-gray-300">{t("language")}</p>
             <div className="flex items-center space-x-2">
               <p>{selectedLanguage === "tr" ? t("turkish") : t("english")}</p>

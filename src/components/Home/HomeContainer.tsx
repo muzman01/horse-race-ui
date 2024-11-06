@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import SellItemModa from "../ModalSection/SellItemModa";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface HomeContainerProps {
   sendMessage: (message: any) => void;
@@ -19,6 +20,7 @@ interface HomeContainerProps {
 const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { handleVibrate } = useTelegram();
 
   const click_score =
     useSelector((state: RootState) => state?.user?.user?.click_score) || 0;
@@ -82,6 +84,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
+    handleVibrate()
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
     card.style.transform = `perspective(1000px) rotateX(${

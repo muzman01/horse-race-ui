@@ -7,6 +7,7 @@ import { RootState } from "../../store";
 import ClipLoader from "react-spinners/ClipLoader";
 import { greenSaddleIcon, saddleIcon } from "../../images";
 import useToast from "../../hooks/useToast";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface MarketItemModalProps {
   item_name: string;
@@ -26,6 +27,7 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
   const [isPurchased, setIsPurchased] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const { handleVibrate } = useTelegram();
 
   const { success, error } = useToast();
   const user = useSelector((state: RootState) => state.user.user);
@@ -36,7 +38,7 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
 
   const handleItemPurchase = async () => {
     const requiredHp = parseFloat(price.toString()); // Gerekli HP miktarı
-
+    handleVibrate();
     // HP yeterli değilse uyarı göster ve işlemi durdur
     if (ton_amount < requiredHp) {
       error(t("not_enough_ton"));
@@ -45,29 +47,26 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
 
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8000/purchase_item",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            item_name: item_name,
-            item_slug: item_slug, // Örnek slug, gerekirse dinamik hale getirin
-            reputation_points: reputation_points,
-            buyer_telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
-            ton_amount: requiredHp, // Satın alma için gerekli HP miktarı
-            item_id: id,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:8000/purchase_item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          item_name: item_name,
+          item_slug: item_slug, // Örnek slug, gerekirse dinamik hale getirin
+          reputation_points: reputation_points,
+          buyer_telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
+          ton_amount: requiredHp, // Satın alma için gerekli HP miktarı
+          item_id: id,
+        }),
+      });
 
       if (!response.ok) throw new Error("Purchase failed");
 
       const data = await response.json();
       console.log(data);
-      
+
       success(t("buy_success_message"));
 
       setIsPurchased(true);
@@ -87,7 +86,10 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
           </ModalHeader>
         }
         trigger={
-          <button className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4">
+          <button
+            onClick={handleVibrate}
+            className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4"
+          >
             {t("buy")}
           </button>
         }

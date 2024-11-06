@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { donateIcon } from "../../images";
 import useToast from "../../hooks/useToast";
+import { useTelegram } from "../../context/TelegramContext";
 
 const DonateModal = () => {
   const [amount, setAmount] = useState("");
+  const { handleVibrate } = useTelegram();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [isThankYouVisible, setThankYouVisible] = useState(false);
   const [tonConnectUI] = useTonConnectUI();
@@ -15,7 +17,7 @@ const DonateModal = () => {
 
   const handleDeposit = () => {
     const donationAmount = selectedAmount || parseFloat(amount);
-
+    handleVibrate();
     if (!donationAmount || isNaN(donationAmount)) {
       error("Please enter a valid amount of at least 5 TON.");
       return;
@@ -54,7 +56,10 @@ const DonateModal = () => {
       <Modal
         header={<ModalHeader>Support Us</ModalHeader>}
         trigger={
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-4 rounded-lg flex items-center justify-between shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200">
+          <div
+            onClick={handleVibrate}
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 p-4 rounded-lg flex items-center justify-between shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200"
+          >
             <p className="text-white font-semibold">Support Us</p>
             <div className="flex items-center space-x-2">
               <img src={donateIcon} alt="Donate" className="w-8 h-8" />
@@ -84,6 +89,7 @@ const DonateModal = () => {
                     onClick={() => {
                       setSelectedAmount(amt);
                       setAmount("");
+                      handleVibrate();
                     }}
                     className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                       selectedAmount === amt

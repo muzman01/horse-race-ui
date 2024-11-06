@@ -7,12 +7,15 @@ import { RootState } from "../../store";
 import useToast from "../../hooks/useToast";
 import ClipLoader from "react-spinners/ClipLoader";
 import { updateUser } from "../../store/slices/userSlice";
+import { useTelegram } from "../../context/TelegramContext";
 
 const ConvertModal = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [convertAmount, setConvertAmount] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const { handleVibrate } = useTelegram();
+
   const click_score =
     useSelector((state: RootState) => state?.user?.user?.click_score) || 0;
   const telegram_id = useSelector(
@@ -21,6 +24,7 @@ const ConvertModal = () => {
   const { success, error } = useToast();
 
   const handleConvertClick = async () => {
+    handleVibrate();
     if (Number(convertAmount) > 0 && Number(convertAmount) <= click_score) {
       setLoading(true); // Yükleyiciyi göster
       try {
@@ -56,6 +60,7 @@ const ConvertModal = () => {
   };
 
   const handleMaxClick = () => {
+    handleVibrate();
     setConvertAmount(String(click_score));
   };
 
@@ -64,7 +69,10 @@ const ConvertModal = () => {
       <Modal
         header={<ModalHeader>{t("convert")}</ModalHeader>}
         trigger={
-          <div className="bg-[#2b2f36] p-4 rounded-lg flex items-center cursor-pointer">
+          <div
+            onClick={handleVibrate}
+            className="bg-[#2b2f36] p-4 rounded-lg flex items-center cursor-pointer"
+          >
             <p className="text-gray-300">HP {t("convert")}</p>
           </div>
         }
