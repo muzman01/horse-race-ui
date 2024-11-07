@@ -40,7 +40,7 @@
           }, 100);
 
           // `start_param` ve kullanıcı bilgilerini al
-          const startParam = tg.initDataUnsafe?.start_param;
+          const startParam = new URLSearchParams(tg.initData).get("start_param");
           console.log("Telegram Web App:", tg);
           console.log("Start Param:", startParam);
 

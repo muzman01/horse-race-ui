@@ -39,7 +39,7 @@ function App() {
 
 
 
-  const dispatch = useDispatch<AppDispatch>();
+ const dispatch = useDispatch<AppDispatch>();
   const { telegramUser } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
