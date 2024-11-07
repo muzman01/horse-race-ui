@@ -29,7 +29,7 @@ const ProfileBar = () => {
           className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64"
           data-aos="fade-left"
         >
-          <div className="text-xs text-[#c25918]">{t("total_ton")}</div>{" "}
+          <div className="text-[10px] text-center text-[#c25918]">{t("total_ton")}</div>{" "}
           {/* Toplam HP */}
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
           <div className="flex-1 text-center items-center">

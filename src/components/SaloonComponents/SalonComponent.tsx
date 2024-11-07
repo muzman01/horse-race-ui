@@ -11,17 +11,38 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
   const getSalonIcon = (name: string) => {
     switch (name) {
       case "Bronz":
-        return <FaMedal className="text-orange-400 text-3xl" />;
-      case "Demir":
-        return <FaShieldAlt className="text-gray-400 text-3xl" />;
+        return <FaMedal className="text-orange-500 text-3xl" />;
       case "Silver":
-        return <FaTrophy className="text-gray-300 text-3xl" />;
-      case "Altın":
-        return <FaCoins className="text-yellow-400 text-3xl" />;
-      case "Elmas":
-        return <FaGem className="text-blue-400 text-3xl" />;
+        return <FaShieldAlt className="text-gray-300 text-3xl" />;
+      case "Gold":
+        return <FaTrophy className="text-yellow-400 text-3xl" />;
+      case "Platinum":
+        return <FaCoins className="text-blue-300 text-3xl" />;
+      case "Diamond":
+        return <FaGem className="text-blue-500 text-3xl" />;
+      case "Master":
+        return <FaShieldAlt className="text-purple-500 text-3xl" />;
       default:
-        return <FaMedal className="text-gray-400 text-3xl" />;
+        return <FaTrophy className="text-gray-400 text-3xl" />;
+    }
+  };
+
+  const getGameFee = (salonId: number) => {
+    switch (salonId) {
+      case 1:
+        return "%20";
+      case 2:
+        return "%15";
+      case 3:
+        return "%10";
+      case 4:
+        return "%5";
+      case 5:
+        return "%2";
+      case 6:
+        return "%1";
+      default:
+        return "%0";
     }
   };
 
@@ -35,7 +56,7 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
         </div>
 
         <div className="flex items-center text-sm space-x-2 text-gray-400">
-          Game Fee: {salon.salon_id === 1 ? "%20" : "%15"}
+          Game Fee: {getGameFee(salon.salon_id)}
         </div>
       </div>
 

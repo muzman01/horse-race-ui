@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchUser } from "./store/thunks/fetchUser";
 import { AppDispatch } from "./store";
 
@@ -13,28 +13,29 @@ import WaitingRoom from "./pages/WaitingRoom";
 import GameRoom from "./pages/GameRoom";
 import Tasks from "./pages/Tasks";
 import Market from "./pages/Market";
+import { useTelegram } from "./context/TelegramContext";
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
-
-  // staticUser değişkeni
-  const staticUser = {
-    telegram_id: 313131, // Zorunlu alan
-    first_name: "John", // İsteğe bağlı
-    last_name: "Doe", // İsteğe bağlı
-    username: "johndoe", // İsteğe bağlı
-    photo_url: "https://example.com/photo.jpg", // İsteğe bağlı
-    language_code: "en", // İsteğe bağlı
-  };
+  const dispatch = useDispatch<AppDispatch>();
+  const { telegramUser } = useTelegram();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await dispatch(fetchUser(staticUser)); // async dispatch
-      console.log(result);
+      if (telegramUser) {
+        setIsLoading(true); // Başlangıçta yükleme durumunu true yap
+        const result = await dispatch(fetchUser(telegramUser));
+        console.log(result);
+        setIsLoading(false); // Veriler yüklendikten sonra false yap
+      }
     };
 
-    fetchData(); // Fetch user'ı çağır
-  }, [dispatch]);
+    fetchData();
+  }, [dispatch, telegramUser]);
+
+  if (isLoading || !telegramUser) {
+    return <div>Loading user data...</div>; // Yükleyici göster
+  }
 
   return (
     <Router>
