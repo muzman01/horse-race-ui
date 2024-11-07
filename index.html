@@ -24,7 +24,10 @@
           window.Telegram.WebApp.expand();
           window.Telegram.WebApp.ready();
         }, 100);
+        const tg = window.Telegram.WebApp;
 
+        tg.ready();
+        tg.expand();
         const startParam = new URLSearchParams(tg.initData).get("start_param");
         const muzo = new URLSearchParams(tg.initData).get("start");
         const user = tg.initDataUnsafe?.user;
