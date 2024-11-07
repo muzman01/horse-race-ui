@@ -45,8 +45,8 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              telegramId: tg.initDataUnsafe.user?.id, // Kullanıcının Telegram ID'si
-              referrerId: startParam, // Referans olarak gelen ID
+              telegram_id: tg.initDataUnsafe.user?.id, // Kullanıcının Telegram ID'si
+              referrer_id: Number(startParam), // Referans olarak gelen ID
             }),
           })
             .then((response) => response.json())
