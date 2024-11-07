@@ -28,6 +28,7 @@
         // start_param'ı alma ve backend'e gönderme
         const tg = window.Telegram.WebApp;
         const startParam = tg.initDataUnsafe?.start_param;
+        console.log(tg, startParam, "muzooo");
 
         if (startParam) {
           console.log("Kullanıcı start parametresi ile geldi:", startParam);
