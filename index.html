@@ -18,25 +18,44 @@
     />
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function (e) {
+      document.addEventListener("DOMContentLoaded", function () {
         // Telegram Web App genişletme ve hazır hale getirme
         setTimeout(() => {
           window.Telegram.WebApp.expand();
           window.Telegram.WebApp.ready();
         }, 100);
+
+        // Telegram Web App SDK'yı başlatma
         const tg = window.Telegram.WebApp;
 
-        tg.ready();
-        tg.expand();
-        const startParam = new URLSearchParams(tg.initData).get("start_param");
-        const muzo = new URLSearchParams(tg.initData).get("start");
-        const user = tg.initDataUnsafe?.user;
-        console.log(muzo, "muzo");
+        // tgWebAppStartParam değerini alma
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = urlParams.get("tgWebAppStartParam"); // "tgWebAppStartParam" ile parametreyi alıyoruz
+        console.log(urlParams, startParam, "muzoo");
 
         if (startParam) {
-          console.log("Start Param:", startParam);
+          console.log("Kullanıcı tgWebAppStartParam ile geldi:", startParam);
+
+          // start param ve kullanıcı ID'si ile backend'e istek gönderme
+          fetch("http://localhost:8000/trackUser", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              telegramId: tg.initDataUnsafe.user?.id, // Kullanıcının Telegram ID'si
+              referrerId: startParam, // Referans olarak gelen ID
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Kullanıcı kaydedildi:", data);
+            })
+            .catch((error) => {
+              console.error("Kullanıcı kaydedilirken hata oluştu:", error);
+            });
         } else {
-          console.log("Doğrudan gelen kullanıcı");
+          console.log("Kullanıcı doğrudan geldi, tgWebAppStartParam yok.");
         }
       });
     </script>

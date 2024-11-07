@@ -10,7 +10,7 @@ const TaskComponent = () => {
   );
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const referralLink = `https://t.me/horse_race_muzman_bot?start=${telegram_id}`;
+  const referralLink = `https://t.me/WinRollerBot/winroller?startattach=${telegram_id}`;
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopySuccess(true);
