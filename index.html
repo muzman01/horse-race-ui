@@ -18,40 +18,63 @@
     />
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function (e) {
-        // Telegram Web App genişletme ve hazır hale getirme
-        setTimeout(() => {
-          window.Telegram.WebApp.expand();
-          window.Telegram.WebApp.ready();
-        }, 100);
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Telegram Web App SDK yüklendiğinde çalıştır
+        const loadTelegramSDK = () => {
+          return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://telegram.org/js/telegram-web-app.js";
+            script.async = true;
+            script.onload = () => resolve(window.Telegram);
+            script.onerror = () =>
+              reject(new Error("Telegram SDK yüklenemedi"));
+            document.head.appendChild(script);
+          });
+        };
 
-        // start_param'ı alma ve backend'e gönderme
-        const tg = window.Telegram.WebApp;
-        const startParam = tg.initDataUnsafe?.start_param;
-        console.log(tg, startParam, "muzooo");
+        try {
+          const tg = await loadTelegramSDK();
+          setTimeout(() => {
+            tg.WebApp.expand();
+            tg.WebApp.ready();
+          }, 100);
 
-        if (startParam) {
-          console.log("Kullanıcı start parametresi ile geldi:", startParam);
+          // `start_param` ve kullanıcı bilgilerini al
+          const startParam = tg.initDataUnsafe?.start_param;
+          console.log("Telegram Web App:", tg);
+          console.log("Start Param:", startParam);
 
-          fetch("http://localhost:8000/trackUser", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              telegramId: tg.initDataUnsafe.user?.id, // Kullanıcının Telegram ID'si
-              referrerId: startParam, // Referans olarak gelen ID
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("Kullanıcı kaydedildi:", data);
+          if (startParam) {
+            console.log("Kullanıcı start parametresi ile geldi:", startParam);
+
+            // Backend'e kullanıcı bilgilerini gönder
+            fetch("http://localhost:8000/trackUser", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                telegramId: tg.initDataUnsafe.user?.id, // Kullanıcının Telegram ID'si
+                referrerId: startParam, // Referans olarak gelen ID
+              }),
             })
-            .catch((error) => {
-              console.error("Kullanıcı kaydedilirken hata oluştu:", error);
-            });
-        } else {
-          console.log("Kullanıcı doğrudan geldi, start param yok.");
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Network response was not ok");
+                }
+                return response.json();
+              })
+              .then((data) => {
+                console.log("Kullanıcı kaydedildi:", data);
+              })
+              .catch((error) => {
+                console.error("Kullanıcı kaydedilirken hata oluştu:", error);
+              });
+          } else {
+            console.log("Kullanıcı doğrudan geldi, start param yok.");
+          }
+        } catch (error) {
+          console.error("Telegram SDK yüklenemedi veya hata oluştu:", error);
         }
       });
     </script>

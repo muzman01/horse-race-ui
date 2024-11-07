@@ -16,6 +16,29 @@ import Market from "./pages/Market";
 import { useTelegram } from "./context/TelegramContext";
 
 function App() {
+  // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
+
+  // // staticUser değişkeni
+  // const staticUser = {
+  //   telegram_id: 313131, // Zorunlu alan
+  //   first_name: "John", // İsteğe bağlı
+  //   last_name: "Doe", // İsteğe bağlı
+  //   username: "johndoe", // İsteğe bağlı
+  //   photo_url: "https://example.com/photo.jpg", // İsteğe bağlı
+  //   language_code: "en", // İsteğe bağlı
+  // };
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const result = await dispatch(fetchUser(staticUser)); // async dispatch
+  //     console.log(result);
+  //   };
+
+  //   fetchData(); // Fetch user'ı çağır
+  // }, [dispatch]);
+
+
+
   const dispatch = useDispatch<AppDispatch>();
   const { telegramUser } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +59,7 @@ function App() {
   if (isLoading || !telegramUser) {
     return <div>Loading user data...</div>; // Yükleyici göster
   }
+
 
   return (
     <Router>
