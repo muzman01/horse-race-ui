@@ -34,7 +34,7 @@ const WaitingBotsComponent: React.FC = () => {
     if (telegram_id) {
       try {
         await axios.post(
-          `http://localhost:8000/salons/${salon_id}/tables/${table_id}/leave_bot`,
+          `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/leave_bot`,
           { telegram_id }
         );
         navigate(`/saloon`);
@@ -49,7 +49,7 @@ const WaitingBotsComponent: React.FC = () => {
     if (telegram_id) {
       try {
         await axios.post(
-          `http://localhost:8000/salons/${salon_id}/tables/${table_id}/ready_bots`,
+          `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/ready_bots`,
           { telegram_id }
         );
         success(

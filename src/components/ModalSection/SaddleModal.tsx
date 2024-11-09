@@ -32,19 +32,22 @@ const SaddleModal = ({ title }: { title: string }) => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/buy_item_sistem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          item_name: title,
-          item_slug: "saddleIcon", // Örnek slug, gerekirse dinamik hale getirin
-          reputation_points: 500,
-          telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
-          hp: requiredHp, // Satın alma için gerekli HP miktarı
-        }),
-      });
+      const response = await fetch(
+        "https://winroller.muzmanlive.com/buy_item_sistem",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            item_name: title,
+            item_slug: "saddleIcon", // Örnek slug, gerekirse dinamik hale getirin
+            reputation_points: 500,
+            telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
+            hp: requiredHp, // Satın alma için gerekli HP miktarı
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error("Purchase failed");
 

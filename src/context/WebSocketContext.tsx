@@ -32,7 +32,7 @@ export const WebSocketProvider: React.FC<{
 
   const connectWebSocket = useCallback(() => {
     try {
-      const ws = new WebSocket("ws://127.0.0.1:9002"); // WebSocket'e bağlanıyoruz
+      const ws = new WebSocket("wss://winroller.muzmanlive.com/ws2"); // WebSocket'e bağlanıyoruz
       wsRef.current = ws;
 
       ws.onopen = () => {

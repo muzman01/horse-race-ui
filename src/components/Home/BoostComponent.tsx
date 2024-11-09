@@ -26,7 +26,7 @@ const BoostComponent = () => {
   const currentBoostLevel = boosts?.level || 0; // Mevcut boost seviyesini al
   const fetchUser = async () => {
     const response: any = await fetch(
-      `http://localhost:8000/users/${telegram_id}`,
+      `https://winroller.muzmanlive.com/users/${telegram_id}`,
       {
         method: "GET",
         headers: {
@@ -49,17 +49,20 @@ const BoostComponent = () => {
 
     setLoading(true); // Yüklenme durumu başlat
     try {
-      const response: any = await fetch("http://localhost:8000/apply_boost", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          telegram_id: telegram_id,
-          requested_level: level,
-          ...boostData,
-        }),
-      });
+      const response: any = await fetch(
+        "https://winroller.muzmanlive.com/apply_boost",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            telegram_id: telegram_id,
+            requested_level: level,
+            ...boostData,
+          }),
+        }
+      );
 
       if (response.ok) {
         success("Boost implemented successfully");

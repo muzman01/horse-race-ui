@@ -14,7 +14,7 @@ const useSalonWebSocket = (onMessage: (data: any) => void) => {
       return;
     }
 
-    const ws = new WebSocket("ws://127.0.0.1:9002");
+    const ws = new WebSocket("wss://winroller.muzmanlive.com/ws2");
     wsRef.current = ws;
 
     ws.onopen = () => {

@@ -47,20 +47,23 @@ const BuyMarketModal: React.FC<MarketItemModalProps> = ({
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/purchase_item", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          item_name: item_name,
-          item_slug: item_slug, // Örnek slug, gerekirse dinamik hale getirin
-          reputation_points: reputation_points,
-          buyer_telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
-          ton_amount: requiredHp, // Satın alma için gerekli HP miktarı
-          item_id: id,
-        }),
-      });
+      const response = await fetch(
+        "https://winroller.muzmanlive.com/purchase_item",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            item_name: item_name,
+            item_slug: item_slug, // Örnek slug, gerekirse dinamik hale getirin
+            reputation_points: reputation_points,
+            buyer_telegram_id: telegram_id, // Gerçek telegram_id'yi kullanın
+            ton_amount: requiredHp, // Satın alma için gerekli HP miktarı
+            item_id: id,
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error("Purchase failed");
 

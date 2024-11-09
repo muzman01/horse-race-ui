@@ -60,7 +60,7 @@ const SettingsComponent = () => {
     tonConnectUI
       .sendTransaction(transaction)
       .then(() => {
-        return fetch("http://localhost:8000/deposit_ton", {
+        return fetch("https://winroller.muzmanlive.com/deposit_ton", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

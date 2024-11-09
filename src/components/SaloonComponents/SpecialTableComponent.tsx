@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { kurpiyerIcon, nullUserIcon } from "../../images";
+import { kurpiyerIcon } from "../../images";
 import { Table } from "../../types/salon";
 import { RootState } from "../../store";
 import axios from "axios";
@@ -27,7 +27,7 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
     if (telegram_id) {
       try {
         await axios.post(
-          `http://localhost:8000/salons/${salon_id}/tables/${table.table_id}/join_with_bots`,
+          `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table.table_id}/join_with_bots`,
           {
             telegram_id: telegram_id,
           }

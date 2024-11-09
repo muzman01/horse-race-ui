@@ -33,16 +33,19 @@ const MarketItemModal: React.FC<MarketItemModalProps> = ({ title, price }) => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/buy_gamepass", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          telegram_id: telegramId,
-          hp: price,
-        }),
-      });
+      const response = await fetch(
+        "https://winroller.muzmanlive.com/buy_gamepass",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            telegram_id: telegramId,
+            hp: price,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Satın alma işlemi başarısız oldu");

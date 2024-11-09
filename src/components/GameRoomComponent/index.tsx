@@ -49,7 +49,7 @@ const GameRoomComponent: React.FC = () => {
   );
 
   useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:9003");
+    const ws = new WebSocket("wss://winroller.muzmanlive.com/ws3");
     setWs(ws);
 
     ws.onopen = () => {

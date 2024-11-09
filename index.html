@@ -29,7 +29,6 @@
         const tg = window.Telegram.WebApp;
         console.log("initDataUnsafe:", tg);
 
-
         // tgWebAppStartParam değerini alma
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = urlParams.get("tgWebAppStartParam"); // "tgWebAppStartParam" ile parametreyi alıyoruz
@@ -39,7 +38,7 @@
           console.log("Kullanıcı tgWebAppStartParam ile geldi:", startParam);
 
           // start param ve kullanıcı ID'si ile backend'e istek gönderme
-          fetch("http://localhost:8000/trackUser", {
+          fetch("https://winroller.muzmanlive.com/trackUser", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

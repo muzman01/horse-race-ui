@@ -28,7 +28,9 @@ const LeaderBoard = () => {
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/users");
+        const response = await axios.get(
+          "https://winroller.muzmanlive.com/users"
+        );
         if (response.data.message === "200: Success") {
           const users: any = response.data.result.map((user: User) => {
             const itemPoints = user.items

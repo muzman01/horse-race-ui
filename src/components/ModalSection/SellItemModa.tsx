@@ -40,7 +40,7 @@ const SellItemModal: React.FC<MarketItemModalProps> = ({
       const uuidString = id.toString(); // Convert Binary to UUID string here
       console.log(uuidString, id);
 
-      const response = await fetch("http://localhost:8000/market", {
+      const response = await fetch("https://winroller.muzmanlive.com/market", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -28,16 +28,19 @@ const ConvertModal = () => {
     if (Number(convertAmount) > 0 && Number(convertAmount) <= click_score) {
       setLoading(true); // Yükleyiciyi göster
       try {
-        const response = await fetch("http://localhost:8000/convert", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            telegram_id: telegram_id,
-            click_score: Number(convertAmount),
-          }),
-        });
+        const response = await fetch(
+          "https://winroller.muzmanlive.com/convert",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              telegram_id: telegram_id,
+              click_score: Number(convertAmount),
+            }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to convert");

@@ -12,6 +12,7 @@ const TaskComponent = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [userInfo, setUserInfo] = useState<any>(); // Kullanıcı bilgilerini tutacak durum
   const [loading, setLoading] = useState(false); // Yükleniyor durumu
+  console.log(loading);
 
   const referralLink = `https://t.me/WinRollerBot/winroller?startapp=${telegram_id}`;
   const handleCopy = () => {
@@ -26,7 +27,7 @@ const TaskComponent = () => {
       setLoading(true); // Yükleme tamamlandı
       try {
         const response = await fetch(
-          `http://localhost:8000/users/${telegram_id}`
+          `https://winroller.muzmanlive.com/users/${telegram_id}`
         );
         if (!response.ok) {
           console.log("Kullanıcı bulunamadı");

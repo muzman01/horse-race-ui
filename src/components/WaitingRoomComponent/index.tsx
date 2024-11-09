@@ -34,7 +34,7 @@ const WaitingRoomComponent: React.FC = () => {
     if (telegram_id) {
       try {
         await axios.post(
-          `http://localhost:8000/salons/${salon_id}/tables/${table_id}/leave`,
+          `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/leave`,
           { telegram_id }
         );
         navigate(`/saloon`);
@@ -49,7 +49,7 @@ const WaitingRoomComponent: React.FC = () => {
     if (telegram_id) {
       try {
         await axios.post(
-          `http://localhost:8000/salons/${salon_id}/tables/${table_id}/ready`,
+          `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/ready`,
           { telegram_id }
         );
         success(

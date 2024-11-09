@@ -35,7 +35,7 @@ const SaddleModal2 = ({ title }: { title: string }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:8000/buy_item_system_ton",
+        "https://winroller.muzmanlive.com/buy_item_system_ton",
         {
           method: "POST",
           headers: {

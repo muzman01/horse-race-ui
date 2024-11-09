@@ -30,6 +30,8 @@ const GameComponentBots: React.FC = () => {
   const [randomRolls, setRandomRolls] = useState<{ [key: number]: number[] }>(
     {}
   );
+  console.log(randomRolls);
+  
   const [totalRolls, setTotalRolls] = useState<{ [key: number]: number }>({});
   const [winner, setWinner] = useState<any | null>(null);
   const [confettiVisible, setConfettiVisible] = useState<boolean>(false);
