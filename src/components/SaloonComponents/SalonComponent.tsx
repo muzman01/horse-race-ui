@@ -1,5 +1,6 @@
 import { FaMedal, FaShieldAlt, FaTrophy, FaCoins, FaGem } from "react-icons/fa";
 import TableComponent from "./TableComponent";
+import SpecialTableComponent from "./SpecialTableComponent"; // Yeni bileşeni içe aktarın
 import { Salon } from "../../types/salon";
 import { gamePassIcon } from "../../images";
 
@@ -61,18 +62,36 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
       </div>
 
       <div className="flex flex-row gap-1">
-        <p className="text-gray-400 mb-4">Enter Fee: {salon.entry_fee} </p>
-        <img src={gamePassIcon} alt="gamepass" className="w-6 h-6" />
+        {salon.salon_id === 0 ? (
+          <>
+            <p className="text-gray-400 mb-4">Welcome Bot Games </p>
+          </>
+        ) : (
+          <>
+            {" "}
+            <p className="text-gray-400 mb-4">Enter Fee: {salon.entry_fee} </p>
+            <img src={gamePassIcon} alt="gamepass" className="w-6 h-6" />
+          </>
+        )}
       </div>
+
       {/* Masaları listeleme */}
       <div className="flex overflow-x-auto gap-4 p-2">
-        {salon.tables.map((table) => (
-          <TableComponent
-            key={table.table_id}
-            table={table}
-            salon_id={salon.salon_id} // Salon ID'sini TableComponent'e geçiriyoruz
-          />
-        ))}
+        {salon.tables.map((table) =>
+          salon.salon_id === 0 ? (
+            <SpecialTableComponent
+              key={table.table_id}
+              table={table}
+              salon_id={salon.salon_id}
+            />
+          ) : (
+            <TableComponent
+              key={table.table_id}
+              table={table}
+              salon_id={salon.salon_id}
+            />
+          )
+        )}
       </div>
     </div>
   );

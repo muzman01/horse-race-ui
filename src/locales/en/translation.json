@@ -51,7 +51,7 @@
   "convert_errorn_message": "Error converting, please try again.",
   "not_enough_hp": "Not Enough HP",
   "not_enough_ton": "Not Enough TON",
-  "buy_success_message": "Buy success!",
+  "buy_success_message": "Successful purchase!",
   "buy_errorn_message": "Something went wrong. Please try again.",
   "add_market_success_message": "Item added successfully",
   "add_market_errorn_message": "Error adding item to market, please try again.",

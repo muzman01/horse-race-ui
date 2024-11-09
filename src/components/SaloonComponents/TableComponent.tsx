@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { kurpiyerIcon } from "../../images";
+import { kurpiyerIcon, nullUserIcon } from "../../images";
 import { Table } from "../../types/salon";
 import { RootState } from "../../store";
 import axios from "axios";
@@ -117,7 +117,12 @@ const TableComponent: React.FC<TableProps> = ({ table, salon_id }) => {
                     </button>
                   ) : (
                     <span className="text-white text-xs truncate max-w-[50px]">
-                      {player.player_id}
+                      <div className="bg-gray-700 rounded-full p-2">
+                        <img
+                          src={nullUserIcon}
+                          className="rounded-full w-6 h-6"
+                        />
+                      </div>
                     </span>
                   )}
                 </div>

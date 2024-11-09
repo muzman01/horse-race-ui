@@ -98,7 +98,7 @@ const SellItemModal: React.FC<MarketItemModalProps> = ({
       >
         <div className="p-8 bg-[#1e1e1e] rounded-2xl min-h-[250px] flex flex-col justify-between items-center">
           <p className="text-lg text-white mb-4">
-            {t("Confirm to sell")} {item_name}?
+            What is the price you are asking for {item_name}?
           </p>
 
           {/* Price Input */}
@@ -106,7 +106,7 @@ const SellItemModal: React.FC<MarketItemModalProps> = ({
             type="number"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
-            placeholder="Enter price"
+            placeholder="Enter the amount of TON"
             className="w-full bg-[#333] text-white p-2 rounded mb-4 outline-none"
           />
 

@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import TaskInfoModal from "../ModalSection/TaskInfoModal";
 import Fligran from "../ComingSoon/Fligran";
+import { FaCheckCircle, FaClock, FaSpinner } from "react-icons/fa"; // İkonları içe aktar
 
 const TaskComponent = () => {
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id || 0
   );
   const [copySuccess, setCopySuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>(); // Kullanıcı bilgilerini tutacak durum
+  const [loading, setLoading] = useState(false); // Yükleniyor durumu
 
   const referralLink = `https://t.me/WinRollerBot/winroller?startapp=${telegram_id}`;
   const handleCopy = () => {
@@ -17,6 +20,28 @@ const TaskComponent = () => {
       setTimeout(() => setCopySuccess(false), 2000); // 2 saniye sonra "Kopyalandı" mesajını gizler
     });
   };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      setLoading(true); // Yükleme tamamlandı
+      try {
+        const response = await fetch(
+          `http://localhost:8000/users/${telegram_id}`
+        );
+        if (!response.ok) {
+          console.log("Kullanıcı bulunamadı");
+        }
+        const data = await response.json();
+        setUserInfo(data.result); // Kullanıcı bilgisini güncelle
+      } catch (error) {
+        console.error("Kullanıcı bilgileri alınırken hata oluştu:", error);
+        setLoading(false); // Yükleme tamamlandı
+      }
+    };
+
+    fetchUserInfo();
+  }, [telegram_id]); // telegram_id değiştiğinde yeniden yükle
+
   return (
     <div className="text-white p-6 w-full max-w-lg mx-auto flex flex-col items-center gap-4">
       <h1 className="text-3xl font-bold text-[#c25918]">Invite Friends</h1>
@@ -108,8 +133,26 @@ const TaskComponent = () => {
               </p>
               <p className="text-gray-400">Reward</p>
             </div>
+            <div>
+              {userInfo?.references?.level1?.is_finished ? (
+                <span className="text-xs font-bold text-[#4CAF50] flex items-center">
+                  <FaCheckCircle className="mr-1" />{" "}
+                </span>
+              ) : userInfo?.references?.level1?.is_started ? (
+                <span className="text-xs font-bold text-[#c25918] flex items-center">
+                  <FaSpinner className="mr-1 animate-spin" />{" "}
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-[#FFC107] flex items-center">
+                  <FaClock className="mr-1" /> {/* Bekliyor için sarı saat */}
+                </span>
+              )}
+            </div>
             <div className="text-center">
-              <p className="text-xs font-bold text-[#c25918]">0/ 5</p>
+              <p className="text-xs font-bold text-[#c25918]">
+                {" "}
+                {userInfo?.references?.level1?.current_reference || 0} / 5
+              </p>
             </div>
           </div>
         </div>
@@ -124,8 +167,26 @@ const TaskComponent = () => {
               </p>
               <p className="text-gray-400">Reward</p>
             </div>
+            <div>
+              {userInfo?.references?.level2?.is_finished ? (
+                <span className="text-xs font-bold text-[#4CAF50] flex items-center">
+                  <FaCheckCircle className="mr-1" />{" "}
+                </span>
+              ) : userInfo?.references?.level2?.is_started ? (
+                <span className="text-xs font-bold text-[#c25918] flex items-center">
+                  <FaSpinner className="mr-1 animate-spin" />{" "}
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-[#FFC107] flex items-center">
+                  <FaClock className="mr-1" /> {/* Bekliyor için sarı saat */}
+                </span>
+              )}
+            </div>
             <div className="text-center">
-              <p className="text-xs font-bold text-[#c25918]">0 / 100</p>
+              <p className="text-xs font-bold text-[#c25918]">
+                {" "}
+                {userInfo?.references?.level2?.current_reference || 0} / 100
+              </p>
             </div>
           </div>
         </div>
@@ -140,8 +201,26 @@ const TaskComponent = () => {
               </p>
               <p className="text-gray-400">Reward</p>
             </div>
+            <div>
+              {userInfo?.references?.level3?.is_finished ? (
+                <span className="text-xs font-bold text-[#4CAF50] flex items-center">
+                  <FaCheckCircle className="mr-1" />{" "}
+                </span>
+              ) : userInfo?.references?.level3?.is_started ? (
+                <span className="text-xs font-bold text-[#c25918] flex items-center">
+                  <FaSpinner className="mr-1 animate-spin" />{" "}
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-[#FFC107] flex items-center">
+                  <FaClock className="mr-1" /> {/* Bekliyor için sarı saat */}
+                </span>
+              )}
+            </div>
             <div className="text-center">
-              <p className="text-xs font-bold text-[#c25918]">0 / 500</p>
+              <p className="text-xs font-bold text-[#c25918]">
+                {" "}
+                {userInfo?.references?.level3?.current_reference || 0} / 500
+              </p>
             </div>
           </div>
         </div>

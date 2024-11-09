@@ -14,9 +14,13 @@ const MarketComponent = () => {
   const [activeTab, setActiveTab] = useState("market");
   const [sortOption, setSortOption] = useState("none");
   const [sortedMarketItems, setSortedMarketItems] = useState<any[]>([]);
-
+  const telegram_id: any = useSelector(
+    (state: RootState) => state?.user?.user?.telegram_id
+  );
   const market_items =
     useSelector((state: RootState) => state?.market?.market) || [];
+
+  console.log(market_items);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -25,16 +29,28 @@ const MarketComponent = () => {
 
   // sortOption veya market_items değiştiğinde listeyi sırala
   useEffect(() => {
-    const sortedItems = [...market_items].sort((a, b) => {
-      if (sortOption === "price") {
-        return b.price - a.price; // Descending order for price
-      } else if (sortOption === "reputation") {
-        return b.reputation_points - a.reputation_points; // Descending order for reputation points
-      }
-      return 0;
-    });
-    setSortedMarketItems(sortedItems);
-  }, [sortOption, market_items]);
+    let items = [...market_items];
+
+    if (sortOption === "your") {
+      // Sadece kullanıcının öğelerini filtrele
+      items = items.filter(
+        (item) => Number(item.seller) === Number(telegram_id)
+      );
+    } else {
+      // Sıralama işlemini uygula
+      items.sort((a, b) => {
+        if (sortOption === "price") {
+          return b.price - a.price;
+        } else if (sortOption === "reputation") {
+          return b.reputation_points - a.reputation_points;
+        }
+        return 0;
+      });
+    }
+
+    setSortedMarketItems(items);
+  }, [sortOption, market_items, telegram_id]);
+
   const gamePasses = [
     {
       id: 1,
@@ -176,6 +192,16 @@ const MarketComponent = () => {
               }`}
             >
               {t("sort_by_reputation")}
+            </button>
+            <button
+              onClick={() => setSortOption("your")}
+              className={`px-4 py-1 text-sm font-semibold ${
+                sortOption === "your"
+                  ? "text-white border-b-2 border-[#c25918]"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Your Items
             </button>
           </div>
 

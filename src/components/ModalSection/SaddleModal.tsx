@@ -82,7 +82,9 @@ const SaddleModal = ({ title }: { title: string }) => {
           <div className="flex justify-between items-center bg-[#2b2f36] p-3 rounded-lg mt-8 w-full max-w-xs">
             <div className="text-sm flex flex-col">
               <p className="text-gray-400">{t("price")}: 200 HP</p>
-              <p className="text-sm text-[#c25918]"> {t("buy_saddle_2")}</p>
+              {!isPurchased && (
+                <p className="text-sm text-[#c25918]"> {t("buy_saddle_2")}</p>
+              )}
             </div>
             <button
               className="bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm flex items-center justify-center"
@@ -92,7 +94,7 @@ const SaddleModal = ({ title }: { title: string }) => {
               {loading ? (
                 <ClipLoader color="#ffffff" size={20} />
               ) : isPurchased ? (
-                t("purchased")
+                "Purchased"
               ) : (
                 t("buy")
               )}
