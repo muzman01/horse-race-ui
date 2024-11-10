@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { cardTable, nullUserIcon } from "../../images";
 import axios from "axios";
 import useToast from "../../hooks/useToast";
+import LoadingComponent from "../LoadingComponent";
+import WarningModal from "../WaningModal";
 
 const WaitingBotsComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -17,9 +19,11 @@ const WaitingBotsComponent: React.FC = () => {
   );
   const navigate = useNavigate();
   const { success, error } = useToast();
+  const [showWarning, setShowWarning] = useState(false); // Uyarı modal durumu
 
   const [countdown, setCountdown] = useState<number | null>(null);
-  const [allReady, setAllReady] = useState(false); // Tüm kullanıcıların hazır olup olmadığını kontrol
+  const [allReady, setAllReady] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Kullanıcının hazır durumu
 
   const salonIdNumber = Number(salon_id);
   const tableIdNumber = Number(table_id);
@@ -27,9 +31,6 @@ const WaitingBotsComponent: React.FC = () => {
   const salon = salons.find((salon) => salon.salon_id === salonIdNumber);
   const table = salon?.tables.find((table) => table.table_id === tableIdNumber);
 
-  // Eğer tablo bulunamazsa, bir hata mesajı döndür.
-
-  // Masadan ayrılma fonksiyonu
   const handleLeaveTable = async () => {
     if (telegram_id) {
       try {
@@ -38,13 +39,14 @@ const WaitingBotsComponent: React.FC = () => {
           { telegram_id }
         );
         navigate(`/saloon`);
-      } catch (er) {}
+      } catch (er) {
+        console.error("Error leaving the table:", er);
+      }
     } else {
-      console.error("Kullanıcı ID'si bulunamadı!");
+      console.error("User ID not found!");
     }
   };
 
-  // Ready butonuna tıklama fonksiyonu (oyuncunun hazır olduğunu bildiren fonksiyon)
   const handleReady = async () => {
     if (telegram_id) {
       try {
@@ -52,39 +54,31 @@ const WaitingBotsComponent: React.FC = () => {
           `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/ready_bots`,
           { telegram_id }
         );
+        setIsReady(true); // Kullanıcı hazır durumuna geçti
         success(
           "You are ready! The game will start when the other players are ready."
         );
       } catch (e) {
-        console.error("Hazır olma durumunu bildirirken hata oluştu:", e);
-        error("You do not have the game pass, please buy it");
+        console.error("Error reporting readiness:", e);
+        error("You do not have the game pass, please buy it.");
       }
     } else {
-      console.error("Kullanıcı ID'si bulunamadı!");
+      console.error("User ID not found!");
     }
   };
 
-  // Tüm oyuncuların hazır olup olmadığını kontrol eden Hook
   useEffect(() => {
-    // İlk olarak players.length === 4 olduğundan emin olalım
     if (table?.players.length === 4) {
-      // Eğer tüm oyuncuların has_paid durumu true ise geri sayımı başlatabiliriz
       const allPlayersReady = table.players.every((player) => player.has_paid);
-
-      if (allPlayersReady) {
-        setAllReady(true);
-      } else {
-        setAllReady(false); // Eğer bir oyuncu hazır değilse geri sayım başlamamalı
-      }
+      setAllReady(allPlayersReady);
     } else {
-      setAllReady(false); // Oyuncu sayısı 4 değilse, geri sayım başlamamalı
+      setAllReady(false);
     }
   }, [table]);
 
-  // Geri sayım ve yönlendirme Hook'u
   useEffect(() => {
     if (allReady && countdown === null) {
-      setCountdown(5); // 5 saniyelik geri sayım başlat
+      setCountdown(5);
     }
     if (countdown !== null && countdown > 0) {
       const timer = window.setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -93,17 +87,45 @@ const WaitingBotsComponent: React.FC = () => {
       navigate(`/game/${salon_id}/${table_id}/game-room-bots`);
     }
   }, [allReady, countdown, navigate, salon_id, table_id]);
+
+  useEffect(() => {
+    const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = ""; // Bazı tarayıcılarda kullanıcıyı uyarır
+
+      // Kullanıcı hazır durumdaysa `handleLeaveTable` çağrılır
+      if (isReady) {
+        setShowWarning(true); // Uyarı modalını aç
+        await handleLeaveTable();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isReady]);
+
+  const confirmLeave = () => {
+    setShowWarning(false);
+    window.location.reload(); // Sayfayı yenile
+  };
+
+  const cancelLeave = () => {
+    setShowWarning(false); // Uyarıyı kapat
+  };
+
   if (!table) {
-    return <div>Loading.</div>;
+    return <LoadingComponent />;
   }
 
-  // Kullanıcının kendisini bul
   const currentPlayer = table.players.find(
     (player) => player.player_id === telegram_id
   );
-  // Sadece diğer oyuncuları (sen hariç) göstereceğiz
+
   const players = table.players
-    .filter((player) => player.player_id !== telegram_id) // Kendi oyuncu ID'ni filtrele
+    .filter((player) => player.player_id !== telegram_id)
     .map((player, idx) => ({
       player_id: player.player_id,
       name: `Horse ${idx + 1}`,
@@ -116,12 +138,17 @@ const WaitingBotsComponent: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-4 min-h-screen p-4 bg-gray-900">
-      {/* Header Alanı */}
+      {showWarning && (
+        <WarningModal
+          message="You have marked yourself as ready. If you leave, your game pass may be wasted. Are you sure you want to leave?"
+          onConfirm={confirmLeave}
+          onCancel={cancelLeave}
+        />
+      )}
       <div className="w-full h-12 bg-[#5e1f1f] flex items-center justify-center rounded-md shadow-md">
         <h1 className="text-yellow-400 text-lg font-semibold">Waiting Room</h1>
       </div>
 
-      {/* Oyun Alanı */}
       <div className="relative w-full mt-4 p-6 bg-[#5e1f1f] rounded-md border border-gray-700 shadow-md flex justify-center items-center">
         <div
           className="w-full h-[400px] bg-cover bg-center rounded-md"
@@ -132,7 +159,6 @@ const WaitingBotsComponent: React.FC = () => {
             border: "2px solid #DCDCDC",
           }}
         >
-          {/* Diğer oyuncuları Masanın Dört Yanına Yerleştiriyoruz */}
           {players.map((player, index) => {
             const positionStyles =
               index === 0
@@ -163,7 +189,6 @@ const WaitingBotsComponent: React.FC = () => {
             );
           })}
 
-          {/* Sadece aktif oyuncu (kullanıcı) için Ready ve Leave butonları */}
           {currentPlayer && !currentPlayer.has_paid ? (
             <div className="absolute z-10 flex items-center justify-center gap-1 bottom-2 left-1/2 transform -translate-x-1/2 text-white">
               <button
@@ -180,7 +205,6 @@ const WaitingBotsComponent: React.FC = () => {
               </button>
             </div>
           ) : (
-            // Eğer oyuncu hazırsa sadece "Ready" yazısı gösterilsin
             <div className="absolute z-10 bottom-2 left-1/2 transform -translate-x-1/2 text-green-400 text-lg font-bold">
               Ready
             </div>
@@ -192,12 +216,10 @@ const WaitingBotsComponent: React.FC = () => {
               <span className="text-lg text-yellow-400 font-bold">
                 Total Bet: {totalBet} TON
               </span>
-              <span className="text-white">Waiting Players..</span>
+              <span className="text-white">Waiting Players...</span>
             </div>
           </div>
         )}
-
-        {/* Masanın Ortasında Geri Sayım */}
         {countdown !== null && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-[#5e1f1f] bg-opacity-90 p-4 rounded-lg border border-gray-700 flex flex-col items-center">

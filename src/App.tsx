@@ -14,6 +14,7 @@ import GameRoom from "./pages/GameRoom";
 import Tasks from "./pages/Tasks";
 import Market from "./pages/Market";
 import { useTelegram } from "./context/TelegramContext";
+import LoadingComponent from "./components/LoadingComponent";
 
 function App() {
   // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
@@ -37,9 +38,7 @@ function App() {
   //   fetchData(); // Fetch user'ı çağır
   // }, [dispatch]);
 
-
-
- const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const { telegramUser } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,9 +56,8 @@ function App() {
   }, [dispatch, telegramUser]);
 
   if (isLoading || !telegramUser) {
-    return <div>Loading user data...</div>; // Yükleyici göster
+    return <LoadingComponent />; // Yükleyici göster
   }
-
 
   return (
     <Router>

@@ -9,6 +9,7 @@ import WhiteHorse from "../Horses/WhiteHorse";
 import BlackHorse from "../Horses/BlackHorse";
 import RedHorse from "../Horses/RedHorse";
 import Confetti from "react-confetti";
+import LoadingComponent from "../LoadingComponent";
 
 const MAX_ROLLS = 5;
 
@@ -31,7 +32,7 @@ const GameComponentBots: React.FC = () => {
     {}
   );
   console.log(randomRolls);
-  
+
   const [totalRolls, setTotalRolls] = useState<{ [key: number]: number }>({});
   const [winner, setWinner] = useState<any | null>(null);
   const [confettiVisible, setConfettiVisible] = useState<boolean>(false);
@@ -48,13 +49,24 @@ const GameComponentBots: React.FC = () => {
   );
 
   useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:9004");
+    const ws = new WebSocket("wss://winroller.muzmanlive.com/ws4");
     setWs(ws);
 
     ws.onopen = () => {
       console.log("WebSocket bağlantısı açıldı.");
       setIsConnected(true);
-      startGame();
+
+      // WebSocket bağlantısı açıldığında startGame çağrılıyor.
+      if (ws && table) {
+        const message = {
+          action: "start_game",
+          player_id: telegram_id.toString(),
+          salon_id: salon_id,
+          table_id: table_id,
+        };
+        ws.send(JSON.stringify(message));
+        console.log("start_game mesajı gönderildi:", message);
+      }
     };
 
     ws.onmessage = (event) => {
@@ -64,7 +76,6 @@ const GameComponentBots: React.FC = () => {
         if (message.action === "game_started") {
           console.log(`Game started with ID: ${message.game_id}`);
         } else if (message.action === "roll_result") {
-          // Zar sonuçlarını güncelle
           const updatedRolls = message.players.reduce(
             (acc: { [key: number]: number[] }, player: any) => {
               acc[player.player_id] = player.rolls;
@@ -103,20 +114,17 @@ const GameComponentBots: React.FC = () => {
     };
   }, []);
 
-  const startGame = () => {
-    if (ws && isConnected && table) {
-      const message = {
-        action: "start_game",
-        player_id: telegram_id,
-        salon_id: salon_id,
-        table_id: table_id,
-      };
-      console.log("start_game mesajı gönderiliyor:", message);
-      ws.send(JSON.stringify(message));
-    } else {
-      console.log("WebSocket henüz bağlanmadı veya tablo mevcut değil.");
-    }
-  };
+  // const startGame = () => {
+  //   if (ws && isConnected && table) {
+  //     const message = {
+  //       action: "start_game",
+  //       player_id: telegram_id,
+  //       salon_id: salon_id,
+  //       table_id: table_id,
+  //     };
+  //     ws.send(JSON.stringify(message));
+  //   }
+  // };
 
   useEffect(() => {
     if (diceRollsLeft > 0 && countdown > 0) {
@@ -131,12 +139,10 @@ const GameComponentBots: React.FC = () => {
   const handleRollDice = () => {
     if (diceRollsLeft <= 0 || !isConnected) return;
 
-    // Gerçek kullanıcı için zar at
     const userRoll = Math.floor(Math.random() * 6) + 1;
     setCurrentRoll(userRoll);
     setPreviousRolls((prev) => [...prev, userRoll]);
 
-    // Botlar için rastgele zar oluştur
     const botRolls: { [key: number]: number } = {};
     table.players.forEach((player: any) => {
       if (player.player_id !== telegram_id) {
@@ -144,7 +150,6 @@ const GameComponentBots: React.FC = () => {
       }
     });
 
-    // Zarları UI'da güncelle
     setRandomRolls((prevRolls) => ({
       ...prevRolls,
       [telegram_id]: [...(prevRolls[telegram_id] || []), userRoll],
@@ -156,7 +161,6 @@ const GameComponentBots: React.FC = () => {
       ),
     }));
 
-    // Toplam zarları güncelle
     setTotalRolls((prevTotalRolls) => ({
       ...prevTotalRolls,
       [telegram_id]: (prevTotalRolls[telegram_id] || 0) + userRoll,
@@ -171,15 +175,14 @@ const GameComponentBots: React.FC = () => {
     setCountdown(10);
     setDiceRollsLeft(diceRollsLeft - 1);
 
-    // Sunucuya tüm zarları gönder
     if (ws) {
       const message = {
         action: "roll_dice",
-        player_id: telegram_id,
+        player_id: telegram_id.toString(),
         roll: userRoll,
         salon_id: salon_id,
         table_id: table_id,
-        bot_rolls: botRolls, // Bot zarları burada ekleniyor
+        bot_rolls: botRolls,
       };
       ws.send(JSON.stringify(message));
     }
@@ -191,7 +194,7 @@ const GameComponentBots: React.FC = () => {
   };
 
   if (!table) {
-    return <div>Loading</div>;
+    return <LoadingComponent />;
   }
 
   const horses = [YellowHorse, WhiteHorse, BlackHorse, RedHorse];
@@ -211,10 +214,7 @@ const GameComponentBots: React.FC = () => {
           {table.players.map((player: any, index: any) => {
             const HorseComponent = horses[index % horses.length];
             const isMyHorse = player.player_id === telegram_id;
-
-            const diceValue = isMyHorse
-              ? previousRolls.reduce((sum, roll) => sum + roll, 0)
-              : totalRolls[player.player_id] || 0;
+            const diceValue = totalRolls[player.player_id] || 0;
 
             return (
               <div
@@ -244,7 +244,6 @@ const GameComponentBots: React.FC = () => {
                     <span className="text-white">
                       {isMyHorse ? (
                         <span className="ml-2 text-yellow-400">
-                          {" "}
                           Your Horse!!
                         </span>
                       ) : (
@@ -295,18 +294,33 @@ const GameComponentBots: React.FC = () => {
                 : "The dice are not cast yet."}
             </div>
           </div>
-
           {winner && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-8 rounded-lg shadow-lg text-center relative">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 animate-fadeIn">
+              <div className="bg-gradient-to-b from-yellow-400 to-[#c25918] p-10 rounded-md shadow-2xl text-center relative transform ">
+                {/* Close Button */}
                 <button
                   onClick={onClose}
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  className="absolute top-3 right-3 text-white text-2xl hover:text-yellow-300"
                 >
                   &#x2715;
                 </button>
-                <div className="text-green-500 text-2xl mt-4">
-                  Winner: {winner === telegram_id ? "You!" : `Jokey ${winner}`}
+
+                {/* Confetti Animation */}
+                <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('/path/to/confetti.png')] bg-cover opacity-20 animate-confetti" />
+                </div>
+
+                {/* Winner Text */}
+                <div className="text-white font-extrabold text-4xl mb-4">
+                  🎉 Winner! 🎉
+                </div>
+                <div className="text-white text-xl font-medium mt-2">
+                  {Number(winner) === telegram_id ? "You!" : `Jokey ${winner}`}
+                </div>
+
+                {/* Winner Icon */}
+                <div className="text-6xl mt-4">
+                  {Number(winner) === telegram_id ? "🏆" : "🎊"}
                 </div>
               </div>
             </div>

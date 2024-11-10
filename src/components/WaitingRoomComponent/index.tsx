@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { cardTable, nullUserIcon } from "../../images";
 import axios from "axios";
 import useToast from "../../hooks/useToast";
+import LoadingComponent from "../LoadingComponent";
 
 const WaitingRoomComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -94,7 +95,7 @@ const WaitingRoomComponent: React.FC = () => {
     }
   }, [allReady, countdown, navigate, salon_id, table_id]);
   if (!table) {
-    return <div>Loading.</div>;
+    return <LoadingComponent />;
   }
 
   // Kullanıcının kendisini bul

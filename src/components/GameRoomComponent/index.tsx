@@ -9,6 +9,7 @@ import WhiteHorse from "../Horses/WhiteHorse";
 import BlackHorse from "../Horses/BlackHorse";
 import RedHorse from "../Horses/RedHorse";
 import Confetti from "react-confetti";
+import LoadingComponent from "../LoadingComponent";
 
 const MAX_ROLLS = 5;
 
@@ -165,7 +166,8 @@ const GameRoomComponent: React.FC = () => {
   };
 
   if (!table) {
-    return <div>Loading</div>;
+    return <LoadingComponent />;
+
   }
 
   const horses = [YellowHorse, WhiteHorse, BlackHorse, RedHorse];

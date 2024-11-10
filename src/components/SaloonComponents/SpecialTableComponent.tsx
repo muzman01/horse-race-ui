@@ -23,7 +23,6 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
   const { warning, success } = useToast();
 
   const handleStart = async () => {
-    // Start butonuna tıklandığında `join_with_bots` endpoint'ine istek gönder
     if (telegram_id) {
       try {
         await axios.post(
@@ -34,7 +33,6 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
         );
         success("You and the bots have joined the table!");
 
-        // Waiting Room ekranına yönlendir
         navigate(`/salon/${salon_id}/table/${table.table_id}/waiting-room-bot`);
       } catch (error) {
         console.error("Masaya katılırken hata oluştu:", error);
@@ -44,6 +42,8 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
       console.error("Kullanıcı ID'si bulunamadı!");
     }
   };
+
+  const isTableFull = table.players.length > 0; // Masa dolu mu kontrolü
 
   return (
     <div
@@ -61,16 +61,18 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
       />
 
       <div className="text-center text-lg text-white mb-4 font-bold">
-        Avaible
+        {isTableFull ? "Table Full" : "Available"}
       </div>
 
-      {/* Start Butonu */}
-      <button
-        className="bg-[#c25918] text-white rounded-md px-6 py-2 text-sm whitespace-nowrap"
-        onClick={handleStart}
-      >
-        Start
-      </button>
+      {/* Start Butonu - Masa doluysa gösterme */}
+      {!isTableFull && (
+        <button
+          className="bg-[#c25918] text-white rounded-md px-6 py-2 text-sm whitespace-nowrap"
+          onClick={handleStart}
+        >
+          Start
+        </button>
+      )}
     </div>
   );
 };

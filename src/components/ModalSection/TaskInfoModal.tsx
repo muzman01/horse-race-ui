@@ -1,11 +1,12 @@
+// components/TaskInfoModal.tsx
 import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 
 const TaskInfoModal = () => {
   return (
-    <div className="flex w-full items-end justify-end ">
+    <div className="flex w-full items-end justify-end">
       <Modal
-        header={<ModalHeader> Referral Rewards</ModalHeader>}
+        header={<ModalHeader>Referral Rewards</ModalHeader>}
         trigger={
           <button className="w-full bg-[#c25918] text-white rounded-2xl py-3 mt-4 active:scale-95 transition-all">
             Learn more
@@ -13,38 +14,39 @@ const TaskInfoModal = () => {
         }
         className="z-50"
       >
-        <div className="mt-2 max-h-[400px] overflow-y-auto">
-          <p className="text-sm/6 text-tg-text-color opacity-60 mb-4">
-            Our referral program has 3 levels of support, providing you with the
-            opportunity to earn bonuses for inviting friends:
+        <div className="mt-2 max-h-[400px] overflow-y-auto p-4 text-tg-text-color">
+          <p className="text-sm/6 opacity-60 mb-4">
+            Our referral system offers a multi-level structure, allowing you to
+            earn rewards as you expand your network. Here’s how it works:
           </p>
-          <p className="text-sm/6 text-tg-text-color mb-1">
-            <span className="opacity-60">1.</span>{" "}
+          <p className="text-sm/6 mb-1">
             <span className="font-semibold opacity-100">Level 1:</span>{" "}
             <span className="opacity-60">
-              You receive a bonus for each friend who registers using your
-              referral link.
+              For every 5 friends who register using your referral link, you
+              earn a game pass. This pass grants you entry into a race where you
+              can compete and win exciting rewards.
             </span>
           </p>
-          <p className="text-sm/6 text-tg-text-color mb-1">
-            <span className="opacity-60">2.</span>{" "}
+          <p className="text-sm/6 mb-1">
             <span className="font-semibold opacity-100">Level 2:</span>{" "}
             <span className="opacity-60">
-              You receive an additional bonus when friends of your referred
-              friends also register and start using the program.
+              Once you refer 100 friends, you will receive an additional reward
+              of 5 TON as a bonus.
             </span>
           </p>
-          <p className="text-sm/6 text-tg-text-color">
-            <span className="opacity-60">3.</span>{" "}
+          <p className="text-sm/6 mb-1">
             <span className="font-semibold opacity-100">Level 3:</span>{" "}
             <span className="opacity-60">
-              You receive a bonus when friends of the second level invite new
-              participants.
+              When you reach 500 referrals, you earn a bonus of 15 TON as a
+              special reward for your efforts.
             </span>
           </p>
-          <p className="text-sm/6 text-tg-text-color opacity-60 mt-4">
-            Thus, you earn rewards not only for your direct invitations but also
-            for the activity of all subsequent levels in your network.
+          <p className="text-sm/6 opacity-60 mt-4">
+            Please note that each level must be completed in sequence to unlock
+            the next. So, start with Level 1, and as your network grows, you
+            will progress through higher reward levels. You earn not only for
+            your direct invitations but also for the growing activity of your
+            network.
           </p>
         </div>
       </Modal>

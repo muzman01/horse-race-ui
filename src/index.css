@@ -58,3 +58,17 @@ html {
     transform: translateY(-50px);
   }
 }
+
+/* Animasyonlu loading bar */
+@keyframes loadingBar {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-loading-bar {
+  animation: loadingBar 1.5s ease-in-out infinite;
+}

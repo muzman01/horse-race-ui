@@ -1,11 +1,14 @@
 // hooks/useWebSocket.ts
 import { useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../store/slices/userSlice";
 
 const useWebSocket = (
   telegram_id: number | undefined,
   onMessage: (data: any) => void
 ) => {
   const wsRef = useRef<WebSocket | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Eğer telegram_id yoksa bağlantıyı başlatma
@@ -16,22 +19,21 @@ const useWebSocket = (
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("WebSocket bağlantısı kuruldu");
         ws.send(JSON.stringify({ telegram_id })); // İlk bağlantıda telegram_id'yi gönder
       };
 
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data); // Gelen veriyi parse et
-          console.log("WebSocket'ten gelen veri:", data);
+
           onMessage(data); // Gelen veriyi callback ile işliyoruz
+          dispatch(updateUser(data));
         } catch (error) {
           console.error("Mesaj parse edilemedi:", error);
         }
       };
 
       ws.onclose = () => {
-        console.log("WebSocket bağlantısı kapandı, yeniden bağlanıyor...");
         setTimeout(createWebSocket, 1000); // Bağlantı kapandığında yeniden başlat
       };
 
