@@ -9,7 +9,7 @@ const BottomNav = () => {
   const isActive = (path: any) => location.pathname === path;
 
   return (
-    <div className="px-7 bg-[#272a2f] py-2 shadow-lg z-10">
+<div className="px-7 bg-[#272a2f] py-2 shadow-lg z-[9999] relative">
       <div className="flex justify-between max-w-3xl mx-auto">
         {" "}
         {/* Ortalamak için max-width ve justify-between */}
