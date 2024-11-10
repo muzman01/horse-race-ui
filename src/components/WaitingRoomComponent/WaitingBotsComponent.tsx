@@ -6,7 +6,6 @@ import { cardTable, nullUserIcon } from "../../images";
 import axios from "axios";
 import useToast from "../../hooks/useToast";
 import LoadingComponent from "../LoadingComponent";
-import WarningModal from "../WaningModal";
 
 const WaitingBotsComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -19,11 +18,9 @@ const WaitingBotsComponent: React.FC = () => {
   );
   const navigate = useNavigate();
   const { success, error } = useToast();
-  const [showWarning, setShowWarning] = useState(false); // Uyarı modal durumu
 
   const [countdown, setCountdown] = useState<number | null>(null);
   const [allReady, setAllReady] = useState(false);
-  const [isReady, setIsReady] = useState(false); // Kullanıcının hazır durumu
 
   const salonIdNumber = Number(salon_id);
   const tableIdNumber = Number(table_id);
@@ -54,7 +51,7 @@ const WaitingBotsComponent: React.FC = () => {
           `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/ready_bots`,
           { telegram_id }
         );
-        setIsReady(true); // Kullanıcı hazır durumuna geçti
+
         success(
           "You are ready! The game will start when the other players are ready."
         );
@@ -88,34 +85,6 @@ const WaitingBotsComponent: React.FC = () => {
     }
   }, [allReady, countdown, navigate, salon_id, table_id]);
 
-  useEffect(() => {
-    const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = ""; // Bazı tarayıcılarda kullanıcıyı uyarır
-
-      // Kullanıcı hazır durumdaysa `handleLeaveTable` çağrılır
-      if (isReady) {
-        setShowWarning(true); // Uyarı modalını aç
-        await handleLeaveTable();
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isReady]);
-
-  const confirmLeave = () => {
-    setShowWarning(false);
-    window.location.reload(); // Sayfayı yenile
-  };
-
-  const cancelLeave = () => {
-    setShowWarning(false); // Uyarıyı kapat
-  };
-
   if (!table) {
     return <LoadingComponent />;
   }
@@ -138,13 +107,6 @@ const WaitingBotsComponent: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-4 min-h-screen p-4 bg-gray-900">
-      {showWarning && (
-        <WarningModal
-          message="You have marked yourself as ready. If you leave, your game pass may be wasted. Are you sure you want to leave?"
-          onConfirm={confirmLeave}
-          onCancel={cancelLeave}
-        />
-      )}
       <div className="w-full h-12 bg-[#5e1f1f] flex items-center justify-center rounded-md shadow-md">
         <h1 className="text-yellow-400 text-lg font-semibold">Waiting Room</h1>
       </div>
