@@ -69,7 +69,9 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
         ) : (
           <>
             {" "}
-            <p className="text-gray-400 mb-4">Enter Fee: {salon.entry_fee} </p>
+            <p className="text-gray-400 mb-4">
+              Game Pass Required: {salon.entry_fee}{" "}
+            </p>
             <img src={gamePassIcon} alt="gamepass" className="w-6 h-6" />
           </>
         )}
