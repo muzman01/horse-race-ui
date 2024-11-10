@@ -15,6 +15,8 @@ import Tasks from "./pages/Tasks";
 import Market from "./pages/Market";
 import { useTelegram } from "./context/TelegramContext";
 import LoadingComponent from "./components/LoadingComponent";
+import WaitingRoomBot from "./pages/WaitingRoomBot";
+import GameRoomBots from "./pages/GameRoomBots";
 
 function App() {
   // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
@@ -79,9 +81,17 @@ function App() {
           path="/salon/:salon_id/table/:table_id/waiting-room"
           element={<WaitingRoom />}
         />
+         <Route
+          path="/salon/:salon_id/table/:table_id/waiting-room-bot"
+          element={<WaitingRoomBot />}
+        />
         <Route
           path="/game/:salon_id/:table_id/game-room"
           element={<GameRoom />}
+        />
+         <Route
+          path="/game/:salon_id/:table_id/game-room-bots"
+          element={<GameRoomBots />}
         />
       </Routes>
     </Router>
