@@ -31,19 +31,19 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
   const getGameFee = (salonId: number) => {
     switch (salonId) {
       case 1:
-        return "%20";
+        return "400";
       case 2:
-        return "%15";
+        return "1200";
       case 3:
-        return "%10";
+        return "2000";
       case 4:
-        return "%5";
+        return "4000";
       case 5:
-        return "%2";
+        return "6000";
       case 6:
-        return "%1";
+        return "10000";
       default:
-        return "%0";
+        return "0";
     }
   };
 
@@ -57,7 +57,7 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
         </div>
 
         <div className="flex items-center text-sm space-x-2 text-gray-400">
-          Game Fee: {getGameFee(salon.salon_id)}
+          Prize: {getGameFee(salon.salon_id)} $HP
         </div>
       </div>
 

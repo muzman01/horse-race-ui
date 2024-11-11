@@ -57,8 +57,11 @@ const MarketItemModal: React.FC<MarketItemModalProps> = ({ title, price }) => {
       success(t("buy_success_message"));
       setIsPurchased(true);
       dispatch(updateUser(data.result)); // Redux'ta kullanıcı bilgisini güncelle
+
+      // Satın alma mesajı gösterildikten sonra butonu tekrar aktif hale getir
+      setTimeout(() => setIsPurchased(false), 2000); // 2 saniye sonra tekrar "buy" olarak değiştir
     } catch (err) {
-      error(t("buy_errorn_message"));
+      error(t("buy_error_message"));
     } finally {
       setLoading(false);
     }
@@ -95,7 +98,7 @@ const MarketItemModal: React.FC<MarketItemModalProps> = ({ title, price }) => {
             <button
               className={`bg-[#c25918]/70 text-white px-4 py-2 rounded-lg hover:bg-[#c25918]/90 transition-all text-sm`}
               onClick={handleItemPurchase}
-              disabled={isPurchased || loading || userHp < price}
+              disabled={loading || userHp < price}
             >
               {loading ? (
                 <ClipLoader color="#ffffff" size={20} />

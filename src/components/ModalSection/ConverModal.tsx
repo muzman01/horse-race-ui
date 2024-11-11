@@ -107,7 +107,7 @@ const ConvertModal = () => {
             <div className="text-white text-base mt-2 text-center">
               {t("hp_amount")}:{" "}
               <span className="font-semibold text-[#c25918]">
-                {Number(convertAmount) / 1000 || 0}
+                {Number(convertAmount) / 100 || 0}
               </span>
             </div>
           </div>

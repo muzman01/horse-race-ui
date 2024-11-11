@@ -9,38 +9,30 @@ const spriteImages = [
   new URL("../../assets/yellow-horse/sprite_110.png", import.meta.url).href,
 ];
 
-const YellowHorse = ({ diceValue }: any) => {
-  const parentWidth = 320; // Parent genişliği
+const MAX_SCORE = 60; // Maksimum toplam skor
 
+const YellowHorse = ({ diceValue, parentWidth }: any) => {
   const [currentSpriteIndex, setCurrentSpriteIndex] = useState(0);
-  const [currentPosition, setCurrentPosition] = useState(0); // Başlangıç pozisyonu
-  const totalParts = 36; // Alanı 36 parçaya böleceğiz
-  const partWidth = parentWidth / totalParts; // Her parçanın genişliği
+  const [currentPosition, setCurrentPosition] = useState(0);
 
-  // Atı hareket ettirmek için zar değerini kullan
-  const moveSprite = (diceValue: any) => {
-    setCurrentPosition((prevPosition) => {
-      const newPosition = prevPosition + diceValue * partWidth;
-      return Math.min(newPosition, parentWidth - 64); // Atın genişliği 64px olduğu için sınır koyuyoruz
-    });
-  };
+  // Birimleri hesapla: parentWidth'i maksimum skora bölerek her bir skor birimi için mesafe ayarlıyoruz.
+  const unitWidth = parentWidth / MAX_SCORE;
 
-  // Zar değeri değiştiğinde, atı hareket ettir
+  // Zar atıldıkça güncelleme
+
+  // Yeni toplam skora göre atın pozisyonunu hesapla
   useEffect(() => {
-    if (diceValue > 0) {
-      moveSprite(diceValue);
-    }
+    setCurrentPosition(diceValue * unitWidth);
   }, [diceValue]);
 
-  // Atın animasyonunu her 100ms'de bir sprite değiştirmek için kullanıyoruz
+  // Atın animasyonunu her 100 ms'de bir sprite değiştirerek çalıştır
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSpriteIndex(
         (prevIndex) => (prevIndex + 1) % spriteImages.length
       );
     }, 100);
-
-    return () => clearInterval(interval); // Temizleme işlemi
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -55,12 +47,16 @@ const YellowHorse = ({ diceValue }: any) => {
       >
         <div
           className="sprite-move"
-          style={{ left: `${currentPosition}px`, position: "absolute", top: 0 }} // Pozisyonu dinamik olarak ayarladık
+          style={{
+            left: `${currentPosition}px`,
+            position: "absolute",
+            top: 0,
+          }}
         >
           <img
             src={spriteImages[currentSpriteIndex]}
             alt={`Sprite ${currentSpriteIndex + 105}`}
-            style={{ width: "64px", height: "48px" }} // Sprite boyutları
+            style={{ width: "64px", height: "48px" }}
           />
         </div>
       </div>

@@ -9,8 +9,8 @@ const ProfileBar = () => {
   const user_name = useSelector(
     (state: RootState) => state?.user?.user?.username
   );
-  const ton_amount =
-    useSelector((state: RootState) => state?.user?.user?.ton_amount) || 0;
+  const hp_amount =
+    useSelector((state: RootState) => state?.user?.user?.hp) || 0;
   return (
     <div className="px-4 z-10 flex flex-row w-full justify-between items-center ">
       <div
@@ -29,12 +29,14 @@ const ProfileBar = () => {
           className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64"
           data-aos="fade-left"
         >
-          <div className="text-[10px] text-center text-[#c25918]">{t("total_ton")}</div>{" "}
+          <div className="text-[10px] text-center text-[#c25918]">
+            {t("HP")} Amount
+          </div>{" "}
           {/* Toplam HP */}
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
           <div className="flex-1 text-center items-center">
             <div className="text-sm flex items-center justify-center gap-1 text-[#85827d] font-medium">
-              {ton_amount.toFixed(4)} TON
+              {hp_amount}
             </div>
           </div>
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>

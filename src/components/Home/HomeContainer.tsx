@@ -3,16 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { dollarIcon, mainLogo, gamePassIcon } from "../../images";
+import { dollarIcon, mainLogo } from "../../images";
 import { updateClickScore } from "../../store/slices/userSlice";
 import BoostComponent from "./BoostComponent";
 import { useTranslation } from "react-i18next";
-import Slider from "react-slick";
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import SellItemModa from "../ModalSection/SellItemModa";
+
 import { useTelegram } from "../../context/TelegramContext";
 import HowToGame from "../ModalSection/HowToGame";
+import Leaderboard from "./Leaderboard";
 
 interface HomeContainerProps {
   sendMessage: (message: any) => void;
@@ -27,15 +28,11 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
     useSelector((state: RootState) => state?.user?.user?.click_score) || 0;
   const base_click_power =
     useSelector((state: RootState) => state?.user?.user?.click_power) || 1;
-  const hp_amount =
-    useSelector((state: RootState) => state?.user?.user?.hp) || 0;
-  const game_pass =
-    useSelector((state: RootState) => state?.user?.user?.game_pass) || 0;
+
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
-  const user_item =
-    useSelector((state: RootState) => state?.user?.user?.items) || [];
+
   const boosts: any = useSelector(
     (state: RootState) => state?.user?.user?.boost
   );
@@ -64,15 +61,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   const click_power = getAdjustedClickPower();
 
   // Reputation puanlarının hesaplanması
-  const reputation_points =
-    useSelector((state: RootState) => state?.user?.user?.reputation_points) ||
-    0;
-  const total_reputation_points =
-    reputation_points +
-    user_item.reduce(
-      (total: number, item: any) => total + (item.reputation_points || 0),
-      0
-    );
+
 
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
@@ -109,14 +98,6 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
     setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
 
-  const sliderSettings = {
-    dots: false,
-    infinite: false,
-    speed: 300,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: true,
-  };
 
   return (
     <div data-aos="zoom-in" className="w-full">
@@ -157,45 +138,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
       </div>
 
       {/* Envanter Alanı */}
-      <div className="flex flex-col items-center opacity-90 mt-12 w-full">
-        <div className="text-lg font-bold text-[#f5a623]">{t("inventory")}</div>
-        <div className="flex justify-center w-full mt-8">
-          <Slider {...sliderSettings} className="w-full max-w-xs">
-            {user_item.map((item: any, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center text-center gap-1"
-                style={{ width: "80px" }}
-              >
-                <SellItemModa
-                  item_name={item.item_name}
-                  item_slug={item.item_slug}
-                  reputation_points={item.reputation_points}
-                  id={item.id}
-                  key={index}
-                />
-              </div>
-            ))}
-          </Slider>
-        </div>
-
-        {/* Toplam İtibar Puanı ve HP */}
-        <div className="flex justify-between w-full px-4 py-2 border-t border-[#f5a623] mt-4">
-          <div className="text-white text-xs">
-            {t("reputation_points")}:{" "}
-            <span className="font-bold">{total_reputation_points}</span>
-          </div>
-          <div className="text-white text-xs">
-            {t("HP")}: <span className="font-bold">{hp_amount}</span>
-          </div>
-          <div className="text-white text-xs flex flex-row">
-            <span className="font-bold">GP: </span>
-            <img src={gamePassIcon} alt="gamepass" className="w-4 h-4" />
-            <span>{game_pass}</span>
-          </div>
-        </div>
-      </div>
-
+      <Leaderboard />
       {clicks.map((click) => (
         <div
           key={click.id}

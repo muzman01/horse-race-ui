@@ -24,6 +24,7 @@ import crwonIcon from "./icons8-crown-48.png";
 import birinciKral from "./birincikral.png";
 import ucuncuKral from "./3kral.png";
 import donateIcon from "./donateblue.png"
+import inventoryIcon from "./incentoryıcon.png"
 
 export {
   dailyReward,
@@ -52,4 +53,5 @@ export {
   birinciKral,
   ucuncuKral,
   donateIcon,
+  inventoryIcon,
 };

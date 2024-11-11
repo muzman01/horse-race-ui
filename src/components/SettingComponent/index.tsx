@@ -14,6 +14,8 @@ import LeaderBoard from "../ModalSection/LeaderBoard";
 import { useState } from "react";
 import { updateTonAmount } from "../../store/slices/userSlice";
 import DonateModal from "../ModalSection/DonateModal";
+import InventoryModal from "../ModalSection/InventoryModal";
+import EditProfile from "../ModalSection/EditProfile";
 
 const SettingsComponent = () => {
   const { t } = useTranslation();
@@ -25,16 +27,14 @@ const SettingsComponent = () => {
   const user_name = useSelector(
     (state: RootState) => state?.user?.user?.username
   );
-  const referralLink = `https://t.me/horse_race_muzman_bot?start=${telegram_id}`;
+  const profile_picture = useSelector(
+    (state: RootState) => state?.user?.user?.photo_url
+  );
+
   const [amount, setAmount] = useState("");
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(referralLink).then(() => {
-      success(t("success_copy"));
-    });
-  };
   const handleCopyId = () => {
     navigator.clipboard.writeText(telegram_id).then(() => {
       success(t("success_copy"));
@@ -91,14 +91,20 @@ const SettingsComponent = () => {
   return (
     <div className="bg-gradient-to-b from-[#1a1a1a] to-[#0d0d0d] text-white min-h-screen p-4">
       {/* Header */}
-      <div className="bg-[#2b2f36] p-4 rounded-lg flex items-center justify-between mb-6">
-        <div>
-          <p className="text-lg">{t("hello")}</p>
-          <p className="text-2xl font-bold">{user_name}</p>
+      <div className="bg-[#2b2f36] p-4 rounded-lg flex flex-col items-center  mb-6">
+        <div className="flex items-center w-full justify-between">
+          <div>
+            <p className="text-lg">{t("hello")}</p>
+            <p className="text-2xl font-bold">{user_name}</p>
+          </div>
+          <div className="bg-gray-700 rounded-full p-2">
+            <img
+              src={profile_picture || nullUserIcon}
+              className="rounded-full w-12 h-12"
+            />
+          </div>
         </div>
-        <div className="bg-gray-700 rounded-full p-2">
-          <img src={nullUserIcon} className="rounded-full w-12 h-12" />
-        </div>
+        <EditProfile />
       </div>
 
       {/* Wallet Button with white lines */}
@@ -153,12 +159,7 @@ const SettingsComponent = () => {
         <LanguageModal />
 
         {/* Arkadaşlarını Davet Et */}
-        <div
-          onClick={handleCopy}
-          className="bg-[#2b2f36] p-4 rounded-lg flex items-center cursor-pointer"
-        >
-          <p className="text-gray-300">{t("invite_friend")}</p>
-        </div>
+        <InventoryModal />
         <ConverModal />
         <DonateModal />
         <LeaderBoard />

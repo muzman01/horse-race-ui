@@ -17,6 +17,7 @@ import { useTelegram } from "./context/TelegramContext";
 import LoadingComponent from "./components/LoadingComponent";
 import WaitingRoomBot from "./pages/WaitingRoomBot";
 import GameRoomBots from "./pages/GameRoomBots";
+import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
 
 function App() {
   // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
@@ -48,8 +49,9 @@ function App() {
     const fetchData = async () => {
       if (telegramUser) {
         setIsLoading(true); // Başlangıçta yükleme durumunu true yap
-        const result = await dispatch(fetchUser(telegramUser));
-        console.log(result);
+        await dispatch(fetchUser(telegramUser));
+        await dispatch(fetchLeaderboard());
+
         setIsLoading(false); // Veriler yüklendikten sonra false yap
       }
     };
@@ -81,7 +83,7 @@ function App() {
           path="/salon/:salon_id/table/:table_id/waiting-room"
           element={<WaitingRoom />}
         />
-         <Route
+        <Route
           path="/salon/:salon_id/table/:table_id/waiting-room-bot"
           element={<WaitingRoomBot />}
         />
@@ -89,7 +91,7 @@ function App() {
           path="/game/:salon_id/:table_id/game-room"
           element={<GameRoom />}
         />
-         <Route
+        <Route
           path="/game/:salon_id/:table_id/game-room-bots"
           element={<GameRoomBots />}
         />

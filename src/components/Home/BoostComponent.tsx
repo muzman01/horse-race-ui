@@ -8,6 +8,8 @@ import { AppDispatch, RootState } from "../../store";
 import useToast from "../../hooks/useToast";
 import { setUser } from "../../store/slices/userSlice";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const BoostComponent = () => {
   const { t } = useTranslation(); // i18n'den metinleri almak için
   const { success, error } = useToast();
@@ -26,7 +28,7 @@ const BoostComponent = () => {
   const currentBoostLevel = boosts?.level || 0; // Mevcut boost seviyesini al
   const fetchUser = async () => {
     const response: any = await fetch(
-      `https://winroller.muzmanlive.com/users/${telegram_id}`,
+      `${API_BASE_URL}/users/${telegram_id}`,
       {
         method: "GET",
         headers: {
@@ -49,20 +51,17 @@ const BoostComponent = () => {
 
     setLoading(true); // Yüklenme durumu başlat
     try {
-      const response: any = await fetch(
-        "https://winroller.muzmanlive.com/apply_boost",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            telegram_id: telegram_id,
-            requested_level: level,
-            ...boostData,
-          }),
-        }
-      );
+      const response: any = await fetch(`${API_BASE_URL}/apply_boost`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          telegram_id: telegram_id,
+          requested_level: level,
+          ...boostData,
+        }),
+      });
 
       if (response.ok) {
         success("Boost implemented successfully");
@@ -91,7 +90,7 @@ const BoostComponent = () => {
         }
         className="z-50"
       >
-        <div className="p-4 bg-[#1e1e1e] rounded-2xl">
+        <div className="p-4 bg-[#1e1e1e] min-h-[450px] rounded-2xl">
           <p className="text-lg font-semibold text-white">
             {t("boost_options")}
           </p>

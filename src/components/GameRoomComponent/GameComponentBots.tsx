@@ -11,7 +11,7 @@ import RedHorse from "../Horses/RedHorse";
 import Confetti from "react-confetti";
 import LoadingComponent from "../LoadingComponent";
 
-const MAX_ROLLS = 5;
+const MAX_ROLLS = 10;
 
 const GameComponentBots: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -230,7 +230,7 @@ const GameComponentBots: React.FC = () => {
                     backgroundSize: "150%",
                   }}
                 >
-                  <div className="flex -ml-10 items-start justify-center h-full">
+                  <div className="flex ml-2 items-start justify-center h-full">
                     <span className="text-yellow-400 font-semibold">
                       {horseAreaRef.current && (
                         <HorseComponent
@@ -269,6 +269,9 @@ const GameComponentBots: React.FC = () => {
           }}
         >
           <div className="flex w-full h-full flex-col items-center justify-center bg-black bg-opacity-50">
+            <div className="mt-4 text-red-500 text-lg font-semibold">
+              Dice Rolls Left: {diceRollsLeft}
+            </div>
             <div className="text-yellow-400 text-2xl mb-4">
               {diceRollsLeft > 0
                 ? `To roll the dice: ${countdown} seconds`
@@ -296,8 +299,7 @@ const GameComponentBots: React.FC = () => {
           </div>
           {winner && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 animate-fadeIn">
-              <div className="bg-gradient-to-b from-yellow-400 to-[#c25918] p-10 rounded-md shadow-2xl text-center relative transform ">
-                {/* Close Button */}
+              <div className="bg-gradient-to-b from-yellow-400 to-[#c25918] p-10 rounded-md shadow-2xl text-center relative transform">
                 <button
                   onClick={onClose}
                   className="absolute top-3 right-3 text-white text-2xl hover:text-yellow-300"
@@ -305,23 +307,27 @@ const GameComponentBots: React.FC = () => {
                   &#x2715;
                 </button>
 
-                {/* Confetti Animation */}
-                <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('/path/to/confetti.png')] bg-cover opacity-20 animate-confetti" />
-                </div>
-
-                {/* Winner Text */}
-                <div className="text-white font-extrabold text-4xl mb-4">
-                  🎉 Winner! 🎉
-                </div>
-                <div className="text-white text-xl font-medium mt-2">
-                  {Number(winner) === telegram_id ? "You!" : `Jokey ${winner}`}
-                </div>
-
-                {/* Winner Icon */}
-                <div className="text-6xl mt-4">
-                  {Number(winner) === telegram_id ? "🏆" : "🎊"}
-                </div>
+                {Number(winner) === telegram_id ? (
+                  <>
+                    <div className="text-white font-extrabold text-4xl mb-4">
+                      🎉 Winner! 🎉
+                    </div>
+                    <div className="text-white text-xl font-medium mt-2">
+                      You!
+                    </div>
+                    <div className="text-6xl mt-4">🏆</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-white font-extrabold text-4xl mb-4">
+                      😢 You Lost!
+                    </div>
+                    <div className="text-white text-xl font-medium mt-2">
+                      Winner: Jockey {winner}
+                    </div>
+                    <div className="text-6xl mt-4">💔</div>
+                  </>
+                )}
               </div>
             </div>
           )}

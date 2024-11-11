@@ -8,6 +8,8 @@ import SaddleModal2 from "../ModalSection/SaddleModal2";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import BuyMarketModal from "../ModalSection/BuyMarketModal";
+import MarketItemModalCustomHp from "../ModalSection/MarketItemModalCustomHp";
+import MarketItemModal2CustomTon from "../ModalSection/MarketItemModal2CustomTon";
 
 const MarketComponent = () => {
   const { t } = useTranslation();
@@ -60,18 +62,33 @@ const MarketComponent = () => {
     },
     {
       id: 2,
+      name: "Game Pass Custom HP",
+      price: "100 HP",
+      component: (
+        <MarketItemModalCustomHp title={t("game_pass_1")} price={100} />
+      ),
+    },
+    {
+      id: 3,
       name: t("game_pass_1"),
       price: "5 TON",
       component: <MarketItemModal2 title={t("game_pass_1")} price={5} />,
     },
     {
-      id: 3,
+      id: 4,
+      name: "Game Pass Custom TON",
+      price: "5 TON",
+      component: <MarketItemModal2CustomTon title={t("game_pass_1")} price={5} />,
+    },
+
+    {
+      id: 5,
       name: t("game_pass_3"),
       price: "300 HP",
       component: "coming soon",
     },
     {
-      id: 4,
+      id: 6,
       name: t("game_pass_4"),
       price: "400 HP",
       component: "coming soon",
