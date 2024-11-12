@@ -7,13 +7,11 @@ const BottomNav = () => {
 
   const location = useLocation();
   useEffect(() => {
-    const bottomNav = document.querySelector(
-      ".bottom-nav-refresh"
-    ) as HTMLElement;
+    const bottomNav:any = document.querySelector(".bottom-nav-refresh");
     if (bottomNav) {
-      bottomNav.style.opacity = "0.99";
+      bottomNav.style.display = "none";
       setTimeout(() => {
-        bottomNav.style.opacity = "1";
+        bottomNav.style.display = "block";
       }, 50);
     }
   }, []);
