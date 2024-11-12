@@ -100,7 +100,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
 
 
   return (
-    <div data-aos="zoom-in" className="w-full">
+    <div  className="w-full">
       <div className="px-4 mt-4 flex justify-center">
         <div className="px-4 py-2 flex items-center space-x-2">
           <img src={dollarIcon} alt={t("dollar_icon")} className="w-12 h-12" />
@@ -108,7 +108,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
         </div>
       </div>
 
-      <div className="px-4 mt-4 flex justify-center">
+      <div data-aos="zoom-in" className="px-4 mt-4 flex justify-center">
         <div
           className="w-40 h-40 p-4 rounded-full circle-outer"
           onClick={handleCardClick}
