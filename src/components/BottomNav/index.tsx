@@ -6,16 +6,13 @@ const BottomNav = () => {
   const { handleVibrate } = useTelegram();
 
   const location = useLocation();
+
   useEffect(() => {
-    const bottomNav:any = document.querySelector(".bottom-nav-refresh");
-    if (bottomNav) {
-      bottomNav.style.display = "none";
-      setTimeout(() => {
-        bottomNav.style.display = "block";
-      }, 50);
+    // Eğer Telegram WebApp API mevcutsa `ready` fonksiyonunu çağır
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
     }
   }, []);
-
   const isActive = (path: any) => location.pathname === path;
 
   return (
