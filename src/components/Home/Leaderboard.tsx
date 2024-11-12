@@ -60,7 +60,8 @@ const Leaderboard = () => {
                       : nullUserIcon
                   }
                   alt="User Avatar"
-                  className="rounded-full"
+                  className="rounded-full w-12 h-12"
+
                 />
               </div>
               <p className="text-xs font-semibold">
@@ -87,7 +88,7 @@ const Leaderboard = () => {
                       : nullUserIcon
                   }
                   alt="User Avatar"
-                  className="rounded-full"
+                  className="rounded-full w-14 h-14"
                 />
               </div>
               <p className="text-xs font-semibold">
@@ -114,7 +115,7 @@ const Leaderboard = () => {
                       : nullUserIcon
                   }
                   alt="User Avatar"
-                  className="rounded-full"
+                  className="rounded-full w-12 h-12"
                 />
               </div>
               <p className="text-xs font-semibold">
@@ -148,7 +149,7 @@ const Leaderboard = () => {
                           : nullUserIcon
                       }
                       alt="User Avatar"
-                      className="rounded-full"
+                      className="rounded-full "
                     />
                   </div>
                   <div>
