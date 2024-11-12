@@ -1,18 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTelegram } from "../../context/TelegramContext";
-import { useEffect } from "react";
 
 const BottomNav = () => {
   const { handleVibrate } = useTelegram();
 
   const location = useLocation();
 
-  useEffect(() => {
-    // Eğer Telegram WebApp API mevcutsa `ready` fonksiyonunu çağır
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-    }
-  }, []);
   const isActive = (path: any) => location.pathname === path;
 
   return (
