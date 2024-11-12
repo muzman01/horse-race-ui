@@ -73,6 +73,6 @@ html {
   animation: loadingBar 1.5s ease-in-out infinite;
 }
 
-.refresh-transform {
-  transform: translateZ(0);
+.bottom-nav-refresh {
+  backface-visibility: hidden;
 }

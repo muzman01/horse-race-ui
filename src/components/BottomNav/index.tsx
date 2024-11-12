@@ -7,20 +7,21 @@ const BottomNav = () => {
 
   const location = useLocation();
   useEffect(() => {
-    // Menüye `refresh-transform` sınıfını ekleyip çıkararak yenileme işlemi yapıyoruz
-    const bottomNav = document.querySelector(".bottom-nav-refresh");
+    const bottomNav = document.querySelector(
+      ".bottom-nav-refresh"
+    ) as HTMLElement;
     if (bottomNav) {
-      bottomNav.classList.add("refresh-transform");
+      bottomNav.style.opacity = "0.99";
       setTimeout(() => {
-        bottomNav.classList.remove("refresh-transform");
-      }, 100); // 100ms bekleme süresi, iOS için yeterli bir süre
+        bottomNav.style.opacity = "1";
+      }, 50);
     }
   }, []);
 
   const isActive = (path: any) => location.pathname === path;
 
   return (
-<div className="px-7 bg-[#272a2f] py-2 shadow-lg z-[9999] relative bottom-nav-refresh">
+    <div className="px-7 bg-[#272a2f] py-2 shadow-lg z-[9999] relative bottom-nav-refresh">
       <div className="flex justify-between max-w-3xl mx-auto">
         {" "}
         {/* Ortalamak için max-width ve justify-between */}
