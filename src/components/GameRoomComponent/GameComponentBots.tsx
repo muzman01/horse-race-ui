@@ -11,6 +11,7 @@ import RedHorse from "../Horses/RedHorse";
 import Confetti from "react-confetti";
 import LoadingComponent from "../LoadingComponent";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTelegram } from "../../context/TelegramContext";
 
 const MAX_ROLLS = 10;
 
@@ -25,7 +26,7 @@ const GameComponentBots: React.FC = () => {
   );
   const horseAreaRef: any = useRef(null);
   const navigate = useNavigate();
-
+  const { handleVibrate } = useTelegram();
   const [countdown, setCountdown] = useState<number>(9999);
   const [currentRoll, setCurrentRoll] = useState<number | null>(null);
   const [previousRolls, setPreviousRolls] = useState<number[]>([]);
@@ -139,7 +140,7 @@ const GameComponentBots: React.FC = () => {
 
   const handleRollDice = () => {
     if (diceRollsLeft <= 0 || !isConnected) return;
-
+    handleVibrate();
     const userRoll = Math.floor(Math.random() * 6) + 1;
     setCurrentRoll(userRoll);
     setPreviousRolls((prev) => [...prev, userRoll]);
@@ -191,6 +192,7 @@ const GameComponentBots: React.FC = () => {
 
   const onClose = () => {
     setWinner(null);
+    handleVibrate();
     navigate(`/saloon`);
   };
 
@@ -250,7 +252,7 @@ const GameComponentBots: React.FC = () => {
           })}
         </div>
       </div> */}
-     <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
+      <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-3">
           <AnimatePresence>
             {table.players
@@ -289,7 +291,9 @@ const GameComponentBots: React.FC = () => {
                               diceValue={diceValue}
                               parentWidth={horseAreaRef?.current?.offsetWidth}
                               diceResult={diceValue}
-                              owner={isMyHorse ? "Your Horse!!" : player.player_id}
+                              owner={
+                                isMyHorse ? "Your Horse!!" : player.player_id
+                              }
                             />
                           )}
                         </span>
