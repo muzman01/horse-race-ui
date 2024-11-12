@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { dollarIcon, mainLogo } from "../../images";
 import { updateClickScore } from "../../store/slices/userSlice";
 import BoostComponent from "./BoostComponent";
@@ -62,14 +60,9 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
 
   // Reputation puanlarının hesaplanması
 
-
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
-
-  useEffect(() => {
-    AOS.init();
-  }, []);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -98,9 +91,8 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
     setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
 
-
   return (
-    <div data-aos="zoom-in" className="w-full">
+    <div className="w-full">
       <div className="px-4 mt-4 flex justify-center">
         <div className="px-4 py-2 flex items-center space-x-2">
           <img src={dollarIcon} alt={t("dollar_icon")} className="w-12 h-12" />
