@@ -11,9 +11,7 @@ interface TelegramUser {
 }
 
 interface TelegramContextType {
-  telegramUser: TelegramUser | null;
-  initData: string | null;
-  hash: string | null;
+  telegramUser: TelegramUser | null; // 'null' olabilir
   showBackButton: () => void;
   hideBackButton: () => void;
   handleVibrate: () => void;
@@ -36,14 +34,13 @@ export const TelegramProvider = ({
 }) => {
   const [telegram, setTelegram] = useState<any>(null);
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
-  const [initData, setInitData] = useState<string | null>(null);
-  const [hash, setHash] = useState<string | null>(null);
 
   useEffect(() => {
     loadTelegramSDK().then((tg) => {
       tg.ready();
       setTelegram(tg);
 
+      // Telegram Web App kullanıcı bilgilerini al ve duruma ata
       const user = tg.initDataUnsafe?.user;
       if (user) {
         setTelegramUser({
@@ -55,10 +52,6 @@ export const TelegramProvider = ({
           language_code: user.language_code,
         });
       }
-      console.log(tg.initDat, "initmuzo");
-
-      setInitData(tg.initData || "");
-      setHash(tg.initDataUnsafe?.hash || "");
     });
   }, []);
 
@@ -83,14 +76,7 @@ export const TelegramProvider = ({
 
   return (
     <TelegramContext.Provider
-      value={{
-        telegramUser,
-        initData,
-        hash,
-        showBackButton,
-        hideBackButton,
-        handleVibrate,
-      }}
+      value={{ telegramUser, showBackButton, hideBackButton, handleVibrate }}
     >
       {children}
     </TelegramContext.Provider>

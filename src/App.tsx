@@ -17,7 +17,7 @@ import { useTelegram } from "./context/TelegramContext";
 import LoadingComponent from "./components/LoadingComponent";
 import WaitingRoomBot from "./pages/WaitingRoomBot";
 import GameRoomBots from "./pages/GameRoomBots";
-// import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
+import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
 
 function App() {
   // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
@@ -42,27 +42,15 @@ function App() {
   // }, [dispatch]);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { telegramUser, initData, hash } = useTelegram();
+  const { telegramUser } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       if (telegramUser) {
         setIsLoading(true); // Başlangıçta yükleme durumunu true yap
-        const result = await dispatch(
-          fetchUser({
-            telegram_id: telegramUser.telegram_id,
-            first_name: telegramUser.first_name,
-            last_name: telegramUser.last_name,
-            username: telegramUser.username,
-            photo_url: telegramUser.photo_url,
-            language_code: telegramUser.language_code,
-            hash,
-            initData,
-          })
-        );
-        // await dispatch(fetchLeaderboard());
-        console.log(result, "muzo");
+        await dispatch(fetchUser(telegramUser));
+        await dispatch(fetchLeaderboard());
 
         setIsLoading(false); // Veriler yüklendikten sonra false yap
       }
