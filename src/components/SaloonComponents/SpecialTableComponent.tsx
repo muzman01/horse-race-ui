@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { kurpiyerIcon } from "../../images";
 import { Table } from "../../types/salon";
@@ -6,6 +6,8 @@ import { RootState } from "../../store";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../hooks/useToast";
+import { BounceLoader } from "react-spinners";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface SpecialTableProps {
   table: Table;
@@ -20,10 +22,14 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
     (state: RootState) => state?.user?.user?.telegram_id
   );
   const navigate = useNavigate();
-  const { warning, success } = useToast();
+  const { handleVibrate } = useTelegram();
+  const { warning } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const handleStart = async () => {
     if (telegram_id) {
+      handleVibrate();
+      setLoading(true);
       try {
         await axios.post(
           `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table.table_id}/join_with_bots`,
@@ -31,14 +37,16 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
             telegram_id: telegram_id,
           }
         );
-        success("You and the bots have joined the table!");
 
         navigate(`/salon/${salon_id}/table/${table.table_id}/waiting-room-bot`);
+        setLoading(false);
       } catch (error) {
         console.error("Masaya katılırken hata oluştu:", error);
         warning("Error joining the table with bots.");
+        setLoading(false);
       }
     } else {
+      setLoading(false);
       console.error("Kullanıcı ID'si bulunamadı!");
     }
   };
@@ -69,8 +77,9 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
         <button
           className="bg-[#c25918] text-white rounded-md px-6 py-2 text-sm whitespace-nowrap"
           onClick={handleStart}
+          disabled={loading}
         >
-          Start
+          {loading ? <BounceLoader color="#9b968f" size={20} /> : "Start"}
         </button>
       )}
     </div>

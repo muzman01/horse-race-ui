@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import { dollarIcon, mainLogo } from "../../images";
 import { updateClickScore } from "../../store/slices/userSlice";
 import BoostComponent from "./BoostComponent";
@@ -67,10 +65,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
     []
   );
 
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
+  
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -108,7 +103,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
         </div>
       </div>
 
-      <div data-aos="zoom-in" className="px-4 mt-4 flex justify-center">
+      <div className="px-4 mt-4 flex justify-center">
         <div
           className="w-40 h-40 p-4 rounded-full circle-outer"
           onClick={handleCardClick}

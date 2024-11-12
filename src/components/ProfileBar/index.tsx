@@ -13,22 +13,13 @@ const ProfileBar = () => {
     useSelector((state: RootState) => state?.user?.user?.hp) || 0;
   return (
     <div className="px-4 z-10 flex flex-row w-full justify-between items-center ">
-      <div
-        className="flex items-center gap-1 w-[30%] space-x-2 pt-4"
-        data-aos="fade-right"
-      >
+      <div className="flex items-center gap-1 w-[30%] space-x-2 pt-4">
         <div>
           <p className="text-sm">{user_name} (Jockey) </p> {/* Kullanıcı adı */}
         </div>
       </div>
-      <div
-        className="flex items-center w-full gap-1 justify-end space-x-4 mt-3"
-        data-aos="fade-right"
-      >
-        <div
-          className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64"
-          data-aos="fade-left"
-        >
+      <div className="flex items-center w-full gap-1 justify-end space-x-4 mt-3">
+        <div className="flex items-center w-2/3 border-2 border-[#43433b] rounded-full px-4 py-[2px] bg-[#43433b]/[0.6] max-w-64">
           <div className="text-[10px] text-center text-[#c25918]">
             {t("HP")} Amount
           </div>{" "}

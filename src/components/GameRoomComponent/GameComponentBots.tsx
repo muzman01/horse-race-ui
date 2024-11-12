@@ -10,6 +10,7 @@ import BlackHorse from "../Horses/BlackHorse";
 import RedHorse from "../Horses/RedHorse";
 import Confetti from "react-confetti";
 import LoadingComponent from "../LoadingComponent";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MAX_ROLLS = 10;
 
@@ -25,7 +26,7 @@ const GameComponentBots: React.FC = () => {
   const horseAreaRef: any = useRef(null);
   const navigate = useNavigate();
 
-  const [countdown, setCountdown] = useState<number>(10);
+  const [countdown, setCountdown] = useState<number>(9999);
   const [currentRoll, setCurrentRoll] = useState<number | null>(null);
   const [previousRolls, setPreviousRolls] = useState<number[]>([]);
   const [randomRolls, setRandomRolls] = useState<{ [key: number]: number[] }>(
@@ -209,7 +210,7 @@ const GameComponentBots: React.FC = () => {
         <h1 className="text-yellow-400 text-lg font-semibold">Game Room</h1>
       </div>
 
-      <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
+      {/* <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
         <div className="flex flex-col gap-3">
           {table.players.map((player: any, index: any) => {
             const HorseComponent = horses[index % horses.length];
@@ -222,7 +223,7 @@ const GameComponentBots: React.FC = () => {
                 className="flex items-start justify-between relative"
               >
                 <div
-                  className="relative w-full h-24 rounded-md shadow-md bg-cover bg-center"
+                  className="relative w-full h-14 rounded-md shadow-md bg-cover bg-center"
                   ref={horseAreaRef}
                   style={{
                     backgroundImage: `url(${cardTable})`,
@@ -230,38 +231,80 @@ const GameComponentBots: React.FC = () => {
                     backgroundSize: "150%",
                   }}
                 >
-                  <div className="flex ml-2 items-start justify-center h-full">
+                  <div className="flex ml-2 items-start   justify-center h-full">
                     <span className="text-yellow-400 font-semibold">
                       {horseAreaRef.current && (
                         <HorseComponent
                           diceValue={diceValue}
                           parentWidth={horseAreaRef?.current?.offsetWidth}
+                          diceResult={diceValue}
+                          owner={isMyHorse ? "Your Horse!!" : player.player_id}
                         />
                       )}
                     </span>
                   </div>
-                  <div className="absolute bottom-2 left-2 w-full flex justify-between items-center px-4">
-                    <span className="text-white">
-                      {isMyHorse ? (
-                        <span className="ml-2 text-yellow-400">
-                          Your Horse!!
-                        </span>
-                      ) : (
-                        <>Owner: {player.player_id}</>
-                      )}
-                    </span>
-                    <span className="text-white">Total Dice: {diceValue}</span>
-                  </div>
+                 
                 </div>
               </div>
             );
           })}
         </div>
+      </div> */}
+     <div className="w-full p-4 bg-[#5e1f1f] border border-gray-700 rounded-lg">
+        <div className="flex flex-col gap-3">
+          <AnimatePresence>
+            {table.players
+              .map((player: any, index: any) => {
+                const diceValue = totalRolls[player.player_id] || 0;
+                return { player, index, diceValue };
+              })
+              .sort((a: any, b: any) => b.diceValue - a.diceValue) // Büyükten küçüğe sıralama
+              .map(({ player, index, diceValue }: any) => {
+                const HorseComponent = horses[index % horses.length];
+                const isMyHorse = player.player_id === telegram_id;
+
+                return (
+                  <motion.div
+                    key={player.player_id}
+                    className="flex items-start justify-between relative"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    layout
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div
+                      className="relative w-full h-22 rounded-md shadow-md bg-cover bg-center"
+                      ref={horseAreaRef}
+                      style={{
+                        backgroundImage: `url(${cardTable})`,
+                        backgroundPosition: "center",
+                        backgroundSize: "150%",
+                      }}
+                    >
+                      <div className="flex ml-2 items-start justify-center h-full">
+                        <span className="text-yellow-400 font-semibold">
+                          {horseAreaRef.current && (
+                            <HorseComponent
+                              diceValue={diceValue}
+                              parentWidth={horseAreaRef?.current?.offsetWidth}
+                              diceResult={diceValue}
+                              owner={isMyHorse ? "Your Horse!!" : player.player_id}
+                            />
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+          </AnimatePresence>
+        </div>
       </div>
 
-      <div className="relative w-full mt-4 p-6 bg-[#5e1f1f] rounded-md border border-gray-700 shadow-md flex justify-center">
+      <div className="relative w-full mt-4 p-4 bg-[#5e1f1f] rounded-md border border-gray-700 shadow-md flex justify-center">
         <div
-          className="w-full flex-col h-[300px] bg-cover bg-center rounded-md flex justify-center items-center relative"
+          className="w-full flex-col h-[200px] bg-cover bg-center rounded-md flex justify-center items-center relative"
           style={{
             backgroundImage: `url(${cardTable})`,
             backgroundPosition: "center",
@@ -269,10 +312,10 @@ const GameComponentBots: React.FC = () => {
           }}
         >
           <div className="flex w-full h-full flex-col items-center justify-center bg-black bg-opacity-50">
-            <div className="mt-4 text-red-500 text-lg font-semibold">
+            <div className="mt-4 text-red-500 text-sm font-semibold">
               Dice Rolls Left: {diceRollsLeft}
             </div>
-            <div className="text-yellow-400 text-2xl mb-4">
+            <div className="text-yellow-400 text-sm mb-4">
               {diceRollsLeft > 0
                 ? `To roll the dice: ${countdown} seconds`
                 : "Your dice are over!"}
@@ -283,14 +326,14 @@ const GameComponentBots: React.FC = () => {
               rollDice={handleRollDice}
             />
 
-            <div className="mt-4 text-white text-lg">
+            <div className="mt-4 text-white text-sm">
               Current dice:{" "}
               {currentRoll !== null
                 ? currentRoll
                 : "The dice are not cast yet."}
             </div>
 
-            <div className="mt-4 text-yellow-400">
+            <div className="mt-4 text-yellow-400 text-sm">
               Previous dice:{" "}
               {previousRolls.length > 0
                 ? previousRolls.join(", ")

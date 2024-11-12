@@ -11,7 +11,7 @@ const spriteImages = [
 
 const MAX_SCORE = 60; // Maksimum toplam skor
 
-const YellowHorse = ({ diceValue, parentWidth }: any) => {
+const YellowHorse = ({ diceValue, parentWidth, owner, diceResult }: any) => {
   const [currentSpriteIndex, setCurrentSpriteIndex] = useState(0);
   const [currentPosition, setCurrentPosition] = useState(0);
 
@@ -36,7 +36,18 @@ const YellowHorse = ({ diceValue, parentWidth }: any) => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center relative">
+      {/* Bilgi etiketi */}
+      <div className="absolute top-0 justify-between right-0 flex text-white text-xs px-2 py-1 rounded-bl-lg shadow-lg">
+        <div className="text-[8px]">
+          {owner === "Your Horse!!" ? "" : `Owner: ${owner}`}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[8px]">Total Dice: {diceResult}</span>
+        </div>
+      </div>
+
+      {/* Sprite Container */}
       <div
         className="sprite-container"
         style={{
@@ -60,6 +71,9 @@ const YellowHorse = ({ diceValue, parentWidth }: any) => {
           />
         </div>
       </div>
+
+      {/* Alt Sınır */}
+      <span className="border-b-2 border-[#7B5E57] w-[95%] "></span>
     </div>
   );
 };

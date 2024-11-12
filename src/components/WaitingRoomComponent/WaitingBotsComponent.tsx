@@ -6,6 +6,8 @@ import { cardTable, nullUserIcon } from "../../images";
 import axios from "axios";
 import useToast from "../../hooks/useToast";
 import LoadingComponent from "../LoadingComponent";
+import { BounceLoader } from "react-spinners";
+import { useTelegram } from "../../context/TelegramContext";
 
 const WaitingBotsComponent: React.FC = () => {
   const { salon_id, table_id } = useParams<{
@@ -18,7 +20,9 @@ const WaitingBotsComponent: React.FC = () => {
   );
   const navigate = useNavigate();
   const { success, error } = useToast();
-
+  const { handleVibrate } = useTelegram();
+  const [readyLoading, setReadyLoading] = useState(false);
+  const [leaveLoading, setLeaveLoading] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [allReady, setAllReady] = useState(false);
 
@@ -30,22 +34,29 @@ const WaitingBotsComponent: React.FC = () => {
 
   const handleLeaveTable = async () => {
     if (telegram_id) {
+      setLeaveLoading(true);
+      handleVibrate();
       try {
         await axios.post(
           `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/leave_bot`,
           { telegram_id }
         );
         navigate(`/saloon`);
+        setLeaveLoading(false);
       } catch (er) {
         console.error("Error leaving the table:", er);
+        setLeaveLoading(false);
       }
     } else {
       console.error("User ID not found!");
+      setLeaveLoading(false);
     }
   };
 
   const handleReady = async () => {
     if (telegram_id) {
+      setReadyLoading(true);
+      handleVibrate();
       try {
         await axios.post(
           `https://winroller.muzmanlive.com/salons/${salon_id}/tables/${table_id}/ready_bots`,
@@ -55,12 +66,15 @@ const WaitingBotsComponent: React.FC = () => {
         success(
           "You are ready! The game will start when the other players are ready."
         );
+        setReadyLoading(false);
       } catch (e) {
         console.error("Error reporting readiness:", e);
         error("You do not have the game pass, please buy it.");
+        setReadyLoading(false);
       }
     } else {
       console.error("User ID not found!");
+      setReadyLoading(false);
     }
   };
 
@@ -156,19 +170,29 @@ const WaitingBotsComponent: React.FC = () => {
               <button
                 className="bg-green-600 text-white px-4 py-2 rounded-md"
                 onClick={handleReady}
+                disabled={readyLoading}
               >
-                Ready
+                {readyLoading ? (
+                  <BounceLoader color="#9b968f" size={20} />
+                ) : (
+                  "Ready"
+                )}
               </button>
               <button
                 onClick={handleLeaveTable}
                 className="bg-[#f5a623] text-white px-4 py-2 rounded-md"
+                disabled={leaveLoading}
               >
-                Leave
+                {leaveLoading ? (
+                  <BounceLoader color="#9b968f" size={20} />
+                ) : (
+                  "Leave"
+                )}
               </button>
             </div>
           ) : (
             <div className="absolute z-10 bottom-2 left-1/2 transform -translate-x-1/2 text-green-400 text-lg font-bold">
-              Ready
+              You Are Ready.
             </div>
           )}
         </div>
