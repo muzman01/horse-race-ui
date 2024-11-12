@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { dollarIcon, mainLogo } from "../../images";
 import { updateClickScore } from "../../store/slices/userSlice";
 import BoostComponent from "./BoostComponent";
@@ -92,7 +94,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   };
 
   return (
-    <div className="w-full">
+    <div data-aos="zoom-in" className="w-full">
       <div className="px-4 mt-4 flex justify-center">
         <div className="px-4 py-2 flex items-center space-x-2">
           <img src={dollarIcon} alt={t("dollar_icon")} className="w-12 h-12" />
