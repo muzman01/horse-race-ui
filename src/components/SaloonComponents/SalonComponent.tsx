@@ -3,12 +3,17 @@ import TableComponent from "./TableComponent";
 import SpecialTableComponent from "./SpecialTableComponent"; // Yeni bileşeni içe aktarın
 import { Salon } from "../../types/salon";
 import { gamePassIcon } from "../../images";
+import { Tooltip } from "react-tooltip";
+
+import { RxInfoCircled } from "react-icons/rx";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface SalonProps {
   salon: Salon;
 }
 
 const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
+  const { handleVibrate } = useTelegram();
   const getSalonIcon = (name: string) => {
     switch (name) {
       case "Bronz":
@@ -61,11 +66,33 @@ const SalonComponent: React.FC<SalonProps> = ({ salon }) => {
         </div>
       </div>
 
-      <div className="flex flex-row gap-1">
+      <div className="flex flex-row jus gap-1">
         {salon.salon_id === 0 ? (
-          <>
+          <div className="flex flex-row justify-cente gap-1 items-center">
             <p className="text-gray-400 mb-4">Welcome Bot Games </p>
-          </>
+
+            <RxInfoCircled
+              onClick={handleVibrate}
+              onMouseEnter={handleVibrate}
+              className="-mt-3 text-gray-400 "
+              data-tooltip-id="freegame-tooltip"
+              data-tooltip-content="This game is played against bots and you cannot win any prizes at the end of the game."
+            />
+
+            <Tooltip
+              id="freegame-tooltip"
+              style={{
+                backgroundColor: "white",
+                color: "black",
+                fontSize: "14px",
+                border: "none",
+                maxWidth: "200px",
+                padding: "5px",
+                borderRadius: "5px",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)", // Gölge ekleme
+              }}
+            />
+          </div>
         ) : (
           <>
             {" "}

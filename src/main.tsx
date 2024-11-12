@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./i18n"; // i18n yapılandırmasını buraya ekleyin
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import 'react-tooltip/dist/react-tooltip.css'
 
 setBackgroundAsSecondary();
 
