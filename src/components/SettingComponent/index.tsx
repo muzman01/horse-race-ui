@@ -16,11 +16,13 @@ import { updateTonAmount } from "../../store/slices/userSlice";
 import DonateModal from "../ModalSection/DonateModal";
 import InventoryModal from "../ModalSection/InventoryModal";
 import EditProfile from "../ModalSection/EditProfile";
+import { useTelegram } from "../../context/TelegramContext";
 
 const SettingsComponent = () => {
   const { t } = useTranslation();
   const { success, error } = useToast();
   const dispatch = useDispatch();
+  const { handleVibrate } = useTelegram();
   const telegram_id: any = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
@@ -36,12 +38,14 @@ const SettingsComponent = () => {
   const wallet = useTonWallet();
 
   const handleCopyId = () => {
+    handleVibrate();
     navigator.clipboard.writeText(telegram_id).then(() => {
       success(t("success_copy"));
     });
   };
 
   const handleDeposit = () => {
+    handleVibrate();
     if (!amount || isNaN(Number(amount))) {
       error("Please enter a valid amount.");
       return;
@@ -84,6 +88,7 @@ const SettingsComponent = () => {
   };
 
   const handleDisconnect = () => {
+    handleVibrate();
     tonConnectUI.disconnect();
     success("Disconnected from wallet");
   };

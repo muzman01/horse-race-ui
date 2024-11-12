@@ -2,10 +2,11 @@ import { useState } from "react";
 import { nullUserIcon } from "../../images";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+import { useTelegram } from "../../context/TelegramContext";
 
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState("hp");
-
+  const { handleVibrate } = useTelegram();
   // Redux'tan leaderboard verisini çekiyoruz
   const { hp, game, loading, error } = useSelector(
     (state: RootState) => state.leaderboard
@@ -30,7 +31,10 @@ const Leaderboard = () => {
               ? "bg-[#f5a623] text-white"
               : "bg-[#161b22] text-gray-400"
           }`}
-          onClick={() => setActiveTab("hp")}
+          onClick={() => {
+            setActiveTab("hp");
+            handleVibrate();
+          }}
         >
           HP Point
         </button>
@@ -40,7 +44,10 @@ const Leaderboard = () => {
               ? "bg-[#f5a623] text-white"
               : "bg-[#161b22] text-gray-400"
           }`}
-          onClick={() => setActiveTab("wins")}
+          onClick={() => {
+            setActiveTab("wins");
+            handleVibrate();
+          }}
         >
           Top Winner
         </button>
@@ -61,7 +68,6 @@ const Leaderboard = () => {
                   }
                   alt="User Avatar"
                   className="rounded-full w-12 h-12"
-
                 />
               </div>
               <p className="text-xs font-semibold">

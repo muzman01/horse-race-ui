@@ -8,6 +8,7 @@ import useToast from "../../hooks/useToast"; // Toast mesajları için
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { updateUser } from "../../store/slices/userSlice";
+import { useTelegram } from "../../context/TelegramContext";
 
 const SaddleModal = ({ title }: { title: string }) => {
   const [isPurchased, setIsPurchased] = useState(false);
@@ -15,6 +16,7 @@ const SaddleModal = ({ title }: { title: string }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { success, error } = useToast();
+  const { handleVibrate } = useTelegram();
   const telegram_id = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
@@ -22,6 +24,7 @@ const SaddleModal = ({ title }: { title: string }) => {
   const userHp = useSelector((state: RootState) => state.user.user?.hp) || 0;
 
   const handleItemPurchase = async () => {
+    handleVibrate();
     const requiredHp = 200; // Gerekli HP miktarı
 
     // HP yeterli değilse uyarı göster ve işlemi durdur
@@ -68,7 +71,10 @@ const SaddleModal = ({ title }: { title: string }) => {
       <Modal
         header={<ModalHeader>{title}</ModalHeader>}
         trigger={
-          <button className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4">
+          <button
+            onClick={handleVibrate}
+            className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4"
+          >
             {t("buy")}
           </button>
         }

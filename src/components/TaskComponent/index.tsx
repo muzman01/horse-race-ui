@@ -4,6 +4,7 @@ import { RootState } from "../../store";
 import TaskInfoModal from "../ModalSection/TaskInfoModal";
 import Fligran from "../ComingSoon/Fligran";
 import { FaCheckCircle, FaClock, FaSpinner } from "react-icons/fa"; // İkonları içe aktar
+import { useTelegram } from "../../context/TelegramContext";
 
 const TaskComponent = () => {
   const telegram_id = useSelector(
@@ -11,11 +12,10 @@ const TaskComponent = () => {
   );
   const [copySuccess, setCopySuccess] = useState(false);
   const [userInfo, setUserInfo] = useState<any>(); // Kullanıcı bilgilerini tutacak durum
-  const [loading, setLoading] = useState(false); // Yükleniyor durumu
-  console.log(loading);
-
+  const { handleVibrate } = useTelegram();
   const referralLink = `https://t.me/WinRollerBot/winroller?startapp=${telegram_id}`;
   const handleCopy = () => {
+    handleVibrate(); // Vibrasyonu çal
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000); // 2 saniye sonra "Kopyalandı" mesajını gizler
@@ -24,7 +24,6 @@ const TaskComponent = () => {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      setLoading(true); // Yükleme tamamlandı
       try {
         const response = await fetch(
           `https://winroller.muzmanlive.com/users/${telegram_id}`
@@ -36,7 +35,6 @@ const TaskComponent = () => {
         setUserInfo(data.result); // Kullanıcı bilgisini güncelle
       } catch (error) {
         console.error("Kullanıcı bilgileri alınırken hata oluştu:", error);
-        setLoading(false); // Yükleme tamamlandı
       }
     };
 
@@ -252,6 +250,3 @@ const TaskComponent = () => {
 };
 
 export default TaskComponent;
-
-//https://web.telegram.org/a/#7886384024
-//7886384024:AAEDP6M8SITns6MIXz7mJGJ0z-77vCPFMJo

@@ -9,13 +9,14 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { RootState } from "../../store";
 import useToast from "../../hooks/useToast";
 import { updateUser } from "../../store/slices/userSlice";
+import { useTelegram } from "../../context/TelegramContext";
 
 const SaddleModal2 = ({ title }: { title: string }) => {
   const [isPurchased, setIsPurchased] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
+  const { handleVibrate } = useTelegram();
   const { success, error } = useToast();
   const user = useSelector((state: RootState) => state.user.user);
   const telegram_id = useSelector(
@@ -24,6 +25,7 @@ const SaddleModal2 = ({ title }: { title: string }) => {
   const ton_amount = user?.ton_amount || 0;
 
   const handleItemPurchase = async () => {
+    handleVibrate();
     const requiredHp = 5; // Gerekli HP miktarı
 
     // HP yeterli değilse uyarı göster ve işlemi durdur
@@ -70,7 +72,10 @@ const SaddleModal2 = ({ title }: { title: string }) => {
       <Modal
         header={<ModalHeader>{title}</ModalHeader>}
         trigger={
-          <button className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4">
+          <button
+            onClick={handleVibrate}
+            className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4"
+          >
             {t("buy")}
           </button>
         }

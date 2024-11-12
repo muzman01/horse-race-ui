@@ -33,7 +33,7 @@ const GameRoomComponent: React.FC = () => {
   );
 
   console.log(randomRolls);
-  
+
   const [totalRolls, setTotalRolls] = useState<{ [key: number]: number }>({});
   const [winner, setWinner] = useState<any | null>(null);
   const [confettiVisible, setConfettiVisible] = useState<boolean>(false);
@@ -54,7 +54,6 @@ const GameRoomComponent: React.FC = () => {
     setWs(ws);
 
     ws.onopen = () => {
-      console.log("WebSocket bağlantısı açıldı.");
       setIsConnected(true);
     };
 
@@ -63,7 +62,6 @@ const GameRoomComponent: React.FC = () => {
         const message = JSON.parse(event.data);
 
         if (message.action === "game_started") {
-          console.log(`Game started with ID: ${message.game_id}`);
         } else if (message.action === "roll_acknowledged") {
           const { player_id, roll } = message;
           setRandomRolls((prevRolls) => ({
@@ -100,7 +98,6 @@ const GameRoomComponent: React.FC = () => {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket bağlantısı kapandı.");
       setIsConnected(false);
     };
 
@@ -167,7 +164,6 @@ const GameRoomComponent: React.FC = () => {
 
   if (!table) {
     return <LoadingComponent />;
-
   }
 
   const horses = [YellowHorse, WhiteHorse, BlackHorse, RedHorse];

@@ -27,16 +27,12 @@
 
         // Telegram Web App SDK'yı başlatma
         const tg = window.Telegram.WebApp;
-        console.log("initDataUnsafe:", tg);
 
         // tgWebAppStartParam değerini alma
         const urlParams = new URLSearchParams(window.location.search);
         const startParam = urlParams.get("tgWebAppStartParam"); // "tgWebAppStartParam" ile parametreyi alıyoruz
-        console.log(tg, "tgmuzo");
 
         if (startParam) {
-          console.log("Kullanıcı tgWebAppStartParam ile geldi:", startParam);
-
           // start param ve kullanıcı ID'si ile backend'e istek gönderme
           fetch("https://winroller.muzmanlive.com/trackUser", {
             method: "POST",

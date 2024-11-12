@@ -9,7 +9,6 @@ export const loadTelegramSDK = (): Promise<any> => {
       script.id = "telegram-sdk";
       script.async = true;
       script.onload = () => {
-        console.log("Telegram SDK Loaded");
         resolve(window.Telegram.WebApp);
       };
       document.body.appendChild(script);

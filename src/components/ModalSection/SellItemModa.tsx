@@ -8,6 +8,7 @@ import useToast from "../../hooks/useToast";
 import ClipLoader from "react-spinners/ClipLoader";
 import { updateUser } from "../../store/slices/userSlice";
 import { greenSaddleIcon, saddleIcon } from "../../images";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface MarketItemModalProps {
   item_name: string;
@@ -28,18 +29,16 @@ const SellItemModal: React.FC<MarketItemModalProps> = ({
   const { t } = useTranslation();
   const { success, error } = useToast();
   const dispatch = useDispatch();
-
+  const { handleVibrate } = useTelegram();
   // Redux: Get user data
   const user = useSelector((state: RootState) => state.user.user);
   const telegramId = user?.telegram_id;
 
   const handleItemPurchase = async () => {
+    handleVibrate();
     setLoading(true);
 
     try {
-      const uuidString = id.toString(); // Convert Binary to UUID string here
-      console.log(uuidString, id);
-
       const response = await fetch("https://winroller.muzmanlive.com/market", {
         method: "POST",
         headers: {
@@ -75,7 +74,10 @@ const SellItemModal: React.FC<MarketItemModalProps> = ({
         header={<ModalHeader>Sell {item_name}</ModalHeader>}
         trigger={
           <div>
-            <button className="text-[#c25918] w-20 rounded-md text-sm border border-[#c25918] py-1 px-1 mb-2">
+            <button
+              onClick={handleVibrate}
+              className="text-[#c25918] w-20 rounded-md text-sm border border-[#c25918] py-1 px-1 mb-2"
+            >
               Sell
             </button>
 

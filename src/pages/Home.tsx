@@ -15,9 +15,8 @@ const Home = () => {
   );
 
   // WebSocket hook'u ile bağlantıyı başlatıyoruz
-  const { sendMessage } = useWebSocket(telegram_id, (data) => {
+  const { sendMessage } = useWebSocket(telegram_id, () => {
     // Burada verileri işlemeyi de ekleyebilirsiniz
-    console.log(data);
   });
 
   useEffect(() => {

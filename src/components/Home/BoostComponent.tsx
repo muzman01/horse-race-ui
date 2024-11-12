@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import useToast from "../../hooks/useToast";
 import { setUser } from "../../store/slices/userSlice";
+import { useTelegram } from "../../context/TelegramContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,6 +15,7 @@ const BoostComponent = () => {
   const { t } = useTranslation(); // i18n'den metinleri almak için
   const { success, error } = useToast();
   const dispatch = useDispatch<AppDispatch>();
+  const { handleVibrate } = useTelegram();
   const [loading, setLoading] = useState(false); // Yüklenme durumu için
   const telegram_id: any = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
@@ -27,20 +29,18 @@ const BoostComponent = () => {
   const hp_amount = user?.hp || 0;
   const currentBoostLevel = boosts?.level || 0; // Mevcut boost seviyesini al
   const fetchUser = async () => {
-    const response: any = await fetch(
-      `${API_BASE_URL}/users/${telegram_id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response: any = await fetch(`${API_BASE_URL}/users/${telegram_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     const data = await response.json();
     dispatch(setUser(data.result));
   };
   const handleBoostPurchase = async (level: number) => {
+    handleVibrate();
     const boostData: any | undefined = {
       1: { currency_type: "hp", amount: 100 },
       2: { currency_type: "ton", amount: 5 },
@@ -81,7 +81,7 @@ const BoostComponent = () => {
       <Modal
         header={<ModalHeader>{t("boost_options")}</ModalHeader>}
         trigger={
-          <div className="flex cursor-pointer gap-1">
+          <div onClick={handleVibrate} className="flex cursor-pointer gap-1">
             <span className="text-[15px]">
               <Rocket cssClasses={"!fill-[#c25918]"} />
             </span>

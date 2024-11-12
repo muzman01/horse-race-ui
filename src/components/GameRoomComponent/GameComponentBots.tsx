@@ -27,13 +27,9 @@ const GameComponentBots: React.FC = () => {
   const horseAreaRef: any = useRef(null);
   const navigate = useNavigate();
   const { handleVibrate } = useTelegram();
-  const [countdown, setCountdown] = useState<number>(9999);
+  const [countdown, setCountdown] = useState<number>(10);
   const [currentRoll, setCurrentRoll] = useState<number | null>(null);
   const [previousRolls, setPreviousRolls] = useState<number[]>([]);
-  const [randomRolls, setRandomRolls] = useState<{ [key: number]: number[] }>(
-    {}
-  );
-  console.log(randomRolls);
 
   const [totalRolls, setTotalRolls] = useState<{ [key: number]: number }>({});
   const [winner, setWinner] = useState<any | null>(null);
@@ -55,7 +51,6 @@ const GameComponentBots: React.FC = () => {
     setWs(ws);
 
     ws.onopen = () => {
-      console.log("WebSocket bağlantısı açıldı.");
       setIsConnected(true);
 
       // WebSocket bağlantısı açıldığında startGame çağrılıyor.
@@ -67,7 +62,6 @@ const GameComponentBots: React.FC = () => {
           table_id: table_id,
         };
         ws.send(JSON.stringify(message));
-        console.log("start_game mesajı gönderildi:", message);
       }
     };
 
@@ -76,16 +70,7 @@ const GameComponentBots: React.FC = () => {
         const message = JSON.parse(event.data);
 
         if (message.action === "game_started") {
-          console.log(`Game started with ID: ${message.game_id}`);
         } else if (message.action === "roll_result") {
-          const updatedRolls = message.players.reduce(
-            (acc: { [key: number]: number[] }, player: any) => {
-              acc[player.player_id] = player.rolls;
-              return acc;
-            },
-            {}
-          );
-
           const totalRollsUpdate = message.players.reduce(
             (acc: { [key: number]: number }, player: any) => {
               acc[player.player_id] = player.total_roll;
@@ -94,7 +79,6 @@ const GameComponentBots: React.FC = () => {
             {}
           );
 
-          setRandomRolls(updatedRolls);
           setTotalRolls(totalRollsUpdate);
         } else if (message.action === "winner_announced") {
           setWinner(message.winner_id);
@@ -107,7 +91,6 @@ const GameComponentBots: React.FC = () => {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket bağlantısı kapandı.");
       setIsConnected(false);
     };
 
@@ -115,18 +98,6 @@ const GameComponentBots: React.FC = () => {
       ws.close();
     };
   }, []);
-
-  // const startGame = () => {
-  //   if (ws && isConnected && table) {
-  //     const message = {
-  //       action: "start_game",
-  //       player_id: telegram_id,
-  //       salon_id: salon_id,
-  //       table_id: table_id,
-  //     };
-  //     ws.send(JSON.stringify(message));
-  //   }
-  // };
 
   useEffect(() => {
     if (diceRollsLeft > 0 && countdown > 0) {
@@ -151,17 +122,6 @@ const GameComponentBots: React.FC = () => {
         botRolls[player.player_id] = Math.floor(Math.random() * 6) + 1;
       }
     });
-
-    setRandomRolls((prevRolls) => ({
-      ...prevRolls,
-      [telegram_id]: [...(prevRolls[telegram_id] || []), userRoll],
-      ...Object.fromEntries(
-        Object.entries(botRolls).map(([botId, roll]: any) => [
-          botId,
-          [...(prevRolls[botId] || []), roll],
-        ])
-      ),
-    }));
 
     setTotalRolls((prevTotalRolls) => ({
       ...prevTotalRolls,

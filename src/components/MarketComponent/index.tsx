@@ -10,21 +10,22 @@ import { RootState } from "../../store";
 import BuyMarketModal from "../ModalSection/BuyMarketModal";
 import MarketItemModalCustomHp from "../ModalSection/MarketItemModalCustomHp";
 import MarketItemModal2CustomTon from "../ModalSection/MarketItemModal2CustomTon";
+import { useTelegram } from "../../context/TelegramContext";
 
 const MarketComponent = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("market");
   const [sortOption, setSortOption] = useState("none");
   const [sortedMarketItems, setSortedMarketItems] = useState<any[]>([]);
+  const { handleVibrate } = useTelegram();
   const telegram_id: any = useSelector(
     (state: RootState) => state?.user?.user?.telegram_id
   );
   const market_items =
     useSelector((state: RootState) => state?.market?.market) || [];
 
-  console.log(market_items);
-
   const handleTabClick = (tab: string) => {
+    handleVibrate();
     setActiveTab(tab);
     setSortOption("none"); // Tab değişince sıralama sıfırlanır
   };
@@ -78,7 +79,9 @@ const MarketComponent = () => {
       id: 4,
       name: "Game Pass Custom TON",
       price: "5 TON",
-      component: <MarketItemModal2CustomTon title={t("game_pass_1")} price={5} />,
+      component: (
+        <MarketItemModal2CustomTon title={t("game_pass_1")} price={5} />
+      ),
     },
 
     {

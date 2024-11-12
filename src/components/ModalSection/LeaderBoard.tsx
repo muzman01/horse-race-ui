@@ -1,12 +1,13 @@
+import { useState, useEffect } from "react";
 import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import { crwonIcon, birinciKral, ucuncuKral } from "../../images";
 import useToast from "../../hooks/useToast";
 import { useTelegram } from "../../context/TelegramContext";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface User {
   telegram_id: number;
@@ -18,12 +19,17 @@ interface User {
   total_reputation_points?: number;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 const LeaderBoard = () => {
   const { t } = useTranslation();
   const { warning } = useToast();
   const [leaderboard, setLeaderboard] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const { handleVibrate } = useTelegram();
+
+  const [currentPage, setCurrentPage] = useState(1); // Sayfa durumu
+  const totalPages = Math.ceil(leaderboard.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -65,6 +71,21 @@ const LeaderBoard = () => {
     fetchLeaderboardData();
   }, [warning]);
 
+  const currentData = leaderboard.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const goToNextPage = () => {
+    handleVibrate();
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const goToPreviousPage = () => {
+    handleVibrate();
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
   return (
     <div>
       <Modal
@@ -91,11 +112,11 @@ const LeaderBoard = () => {
                 {t("leaderboard.title", "Leaderboard")}
               </h2>
               <div className="space-y-3 w-full">
-                {leaderboard.map((user: any, index) => {
+                {currentData.map((user, index) => {
                   let icon;
-                  if (index === 0) icon = birinciKral;
-                  else if (index === 1) icon = crwonIcon;
-                  else if (index === 2) icon = ucuncuKral;
+                  if (index === 0 && currentPage === 1) icon = birinciKral;
+                  else if (index === 1 && currentPage === 1) icon = crwonIcon;
+                  else if (index === 2 && currentPage === 1) icon = ucuncuKral;
 
                   return (
                     <div
@@ -104,7 +125,7 @@ const LeaderBoard = () => {
                     >
                       <div className="flex items-center space-x-3">
                         <span className="text-lg font-bold text-white">
-                          {index + 1}
+                          {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                         </span>
                         {icon ? (
                           <img
@@ -114,7 +135,7 @@ const LeaderBoard = () => {
                           />
                         ) : (
                           <div className="w-10 h-10 flex items-center justify-center text-gray-500">
-                            {index + 1}
+                            {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                           </div>
                         )}
                         <span className="text-gray-300 font-medium">
@@ -127,6 +148,29 @@ const LeaderBoard = () => {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Pagination Controls */}
+              <div className="flex justify-center mt-6 items-center space-x-6">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className="p-2 bg-[#2b2f36] text-gray-300 rounded-full disabled:opacity-50"
+                >
+                  <FaChevronLeft size={15} />
+                </button>
+
+                <span className="text-gray-300  font-semibold text-sm bg-[#2b2f36] rounded-full px-4 py-2">
+                  {currentPage} / {totalPages}
+                </span>
+
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-2 bg-[#2b2f36] text-gray-300  rounded-full disabled:opacity-50"
+                >
+                  <FaChevronRight size={15} />
+                </button>
               </div>
             </div>
           )}

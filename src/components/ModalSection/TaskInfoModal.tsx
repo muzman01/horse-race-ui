@@ -1,14 +1,19 @@
 // components/TaskInfoModal.tsx
 import { Modal } from "@telegram-apps/telegram-ui";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
+import { useTelegram } from "../../context/TelegramContext";
 
 const TaskInfoModal = () => {
+  const { handleVibrate } = useTelegram();
   return (
     <div className="flex w-full items-end justify-end">
       <Modal
         header={<ModalHeader>Referral Rewards</ModalHeader>}
         trigger={
-          <button className="w-full bg-[#c25918] text-white rounded-2xl py-3 mt-4 active:scale-95 transition-all">
+          <button
+            onClick={handleVibrate}
+            className="w-full bg-[#c25918] text-white rounded-2xl py-3 mt-4 active:scale-95 transition-all"
+          >
             Learn more
           </button>
         }

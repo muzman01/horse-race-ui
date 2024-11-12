@@ -3,9 +3,11 @@ import Settings from "../../icons/Settings";
 import { useTranslation } from "react-i18next"; // i18n kullanımı için import
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+import { useTelegram } from "../../context/TelegramContext";
 
 const ProfileBar = () => {
   const { t } = useTranslation(); // i18n'den metinleri almak için
+  const { handleVibrate } = useTelegram();
   const user_name = useSelector(
     (state: RootState) => state?.user?.user?.username
   );
@@ -31,7 +33,7 @@ const ProfileBar = () => {
             </div>
           </div>
           <div className="h-[32px] w-[2px] bg-[#43433b] mx-2"></div>
-          <Link to="/settings">
+          <Link onClick={handleVibrate} to="/settings">
             <Settings className="text-white" />
           </Link>
         </div>

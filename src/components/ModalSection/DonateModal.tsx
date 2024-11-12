@@ -105,7 +105,7 @@ const DonateModal = () => {
               <div className="mt-4 w-full">
                 <input
                   type="text"
-                  placeholder="Or enter custom amount (min 5 TON)"
+                  placeholder="Or enter custom amount "
                   value={amount}
                   onChange={(e) => {
                     setAmount(e.target.value);

@@ -5,14 +5,16 @@ import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays
 
 import { mainLogo } from "../../images";
 import StepContent from "../HowToGame";
+import { useTelegram } from "../../context/TelegramContext";
 
 const HowToGame = () => {
+  const { handleVibrate } = useTelegram();
   return (
     <div className="flex w-full items-end justify-end">
       <Modal
         header={<ModalHeader>How to Play</ModalHeader>}
         trigger={
-          <IconButton mode="outline" size="s">
+          <IconButton onClick={handleVibrate} mode="outline" size="s">
             <RxQuestionMarkCircled />
           </IconButton>
         }

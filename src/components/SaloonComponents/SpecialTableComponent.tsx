@@ -6,7 +6,7 @@ import { RootState } from "../../store";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../hooks/useToast";
-import { BounceLoader } from "react-spinners";
+import { BarLoader, BounceLoader } from "react-spinners";
 import { useTelegram } from "../../context/TelegramContext";
 
 interface SpecialTableProps {
@@ -69,8 +69,18 @@ const SpecialTableComponent: React.FC<SpecialTableProps> = ({
       />
 
       <div className="text-center text-lg text-white mb-4 font-bold">
-        {isTableFull ? "Table Full" : "Available"}
+        {isTableFull ? (
+          <span className="text-[#c25918]">Table Full</span>
+        ) : (
+          <span className="text-green-700">Avaible</span>
+        )}
       </div>
+      {isTableFull && (
+        <div className="text-center text-sm text-[#c25918] flex flex-col items-center gap-2 mb-4">
+          <span> Waiting for the table to become available...</span>
+          <BarLoader />
+        </div>
+      )}
 
       {/* Start Butonu - Masa doluysa gösterme */}
       {!isTableFull && (

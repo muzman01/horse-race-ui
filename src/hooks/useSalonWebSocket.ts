@@ -18,7 +18,6 @@ const useSalonWebSocket = (onMessage: (data: any) => void) => {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("WebSocket bağlantısı kuruldu");
       ws.send(JSON.stringify({ action: "saloon" }));
       reconnectAttemptsRef.current = 0; // Bağlantı kurulduğunda deneme sayacını sıfırla
       isConnected.current = true; // Bağlantı kurulduğu bilgisini güncelle
@@ -41,7 +40,6 @@ const useSalonWebSocket = (onMessage: (data: any) => void) => {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket bağlantısı kapandı");
       wsRef.current = null;
       isConnected.current = false; // Bağlantı kapandığında durumu güncelle
 

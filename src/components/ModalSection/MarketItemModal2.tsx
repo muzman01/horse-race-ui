@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useToast from "../../hooks/useToast";
 import { RootState } from "../../store";
 import { ClipLoader } from "react-spinners";
+import { useTelegram } from "../../context/TelegramContext";
 
 interface MarketItemModalProps {
   title: string;
@@ -20,13 +21,14 @@ const MarketItemModal2: React.FC<MarketItemModalProps> = ({ title, price }) => {
   const { t } = useTranslation();
   const { success, error } = useToast();
   const dispatch = useDispatch();
-
+  const { handleVibrate } = useTelegram();
   // Kullanıcı bilgilerini Redux'tan alıyoruz
   const user = useSelector((state: RootState) => state.user.user);
   const userHp = user?.ton_amount || 0;
   const telegramId = user?.telegram_id;
 
   const handleItemPurchase = async () => {
+    handleVibrate();
     if (!telegramId || userHp < price) {
       error("Yeterli TON yok!");
       return;
@@ -73,7 +75,10 @@ const MarketItemModal2: React.FC<MarketItemModalProps> = ({ title, price }) => {
       <Modal
         header={<ModalHeader>{title}</ModalHeader>}
         trigger={
-          <button className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4">
+          <button
+            onClick={handleVibrate}
+            className="bg-[#c25918] text-white w-28 rounded-2xl py-2 px-4"
+          >
             {t("buy")}
           </button>
         }
