@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
-import { useTelegram } from "../../context/TelegramContext"; // Context'i içe aktarın
 
 interface FetchUserArgs {
   telegram_id: number;
@@ -9,6 +8,8 @@ interface FetchUserArgs {
   username?: string;
   photo_url?: string;
   language_code?: string;
+  hash: any;
+  initData: any;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,8 +17,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (args: FetchUserArgs, thunkAPI) => {
-    const { initData, hash } = useTelegram();
-
     try {
       const {
         telegram_id,
@@ -26,6 +25,8 @@ export const fetchUser = createAsyncThunk(
         username,
         photo_url,
         language_code,
+        initData,
+        hash,
       } = args;
 
       const response = await fetch(`${API_BASE_URL}/users/`, {

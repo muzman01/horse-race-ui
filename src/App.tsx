@@ -42,15 +42,27 @@ function App() {
   // }, [dispatch]);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { telegramUser } = useTelegram();
+  const { telegramUser, initData, hash } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       if (telegramUser) {
         setIsLoading(true); // Başlangıçta yükleme durumunu true yap
-        await dispatch(fetchUser(telegramUser));
+        const result = await dispatch(
+          fetchUser({
+            telegram_id: telegramUser.telegram_id,
+            first_name: telegramUser.first_name,
+            last_name: telegramUser.last_name,
+            username: telegramUser.username,
+            photo_url: telegramUser.photo_url,
+            language_code: telegramUser.language_code,
+            hash,
+            initData,
+          })
+        );
         // await dispatch(fetchLeaderboard());
+        console.log(result, "muzo");
 
         setIsLoading(false); // Veriler yüklendikten sonra false yap
       }

@@ -55,6 +55,7 @@ export const TelegramProvider = ({
           language_code: user.language_code,
         });
       }
+      console.log(tg.initDat, "muzoo");
 
       setInitData(tg.initData || "");
       setHash(tg.initDataUnsafe?.hash || "");
