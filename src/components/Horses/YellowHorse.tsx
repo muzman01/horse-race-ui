@@ -43,7 +43,19 @@ const YellowHorse = ({ diceValue, parentWidth, owner, diceResult }: any) => {
           {owner === "Your Horse!!" ? "" : `Owner: ${owner}`}
         </div>
         <div className="flex justify-between">
-          <span className="text-[8px]">Total Dice: {diceResult}</span>
+          <span className="text-[8px]">
+            {" "}
+            {owner === "Your Horse!!" ? (
+              <>
+                <span className="text-yellow-500">Your Dice: {diceResult}</span>
+              </>
+            ) : (
+              <>
+                Total Dice:
+                {diceResult}
+              </>
+            )}
+          </span>
         </div>
       </div>
 

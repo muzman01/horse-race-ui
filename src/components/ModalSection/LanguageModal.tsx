@@ -25,7 +25,7 @@ const LanguageModal = () => {
           >
             <p className="text-gray-300">{t("language")}</p>
             <div className="flex items-center space-x-2">
-              <p>{selectedLanguage === "tr" ? t("turkish") : t("english")}</p>
+              <p>{selectedLanguage === "tr" ? t("turkish") : t("English")}</p>
               <img
                 src={
                   selectedLanguage === "tr"
