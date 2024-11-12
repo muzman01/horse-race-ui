@@ -1,21 +1,23 @@
-// store/thunks/fetchUser.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
+import { useTelegram } from "../../context/TelegramContext"; // Context'i içe aktarın
 
 interface FetchUserArgs {
-  telegram_id: number; // Zorunlu alan
-  first_name?: string; // İsteğe bağlı
-  last_name?: string; // İsteğe bağlı
-  username?: string; // İsteğe bağlı
-  photo_url?: string; // İsteğe bağlı
-  language_code?: string; // İsteğe bağlı
+  telegram_id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  language_code?: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // .env dosyasından URL'yi alıyoruz
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (args: FetchUserArgs, thunkAPI) => {
+    const { initData, hash } = useTelegram();
+
     try {
       const {
         telegram_id,
@@ -30,14 +32,16 @@ export const fetchUser = createAsyncThunk(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Init-Data": initData || "", // initData'yi başlık olarak ekleyin
+          "X-Hash": hash || "", // hash'i başlık olarak ekleyin
         },
         body: JSON.stringify({
-          telegram_id, // Zorunlu alan
-          first_name, // İsteğe bağlı
-          last_name, // İsteğe bağlı
-          username, // İsteğe bağlı
-          photo_url, // İsteğe bağlı
-          language_code, // İsteğe bağlı
+          telegram_id,
+          first_name,
+          last_name,
+          username,
+          photo_url,
+          language_code,
         }),
       });
 
@@ -46,13 +50,11 @@ export const fetchUser = createAsyncThunk(
       }
 
       const data = await response.json();
-      const user: User = data.result[0]; // Kullanıcı verisi
-      const token: string = data.result[1]; // Token
+      const user: User = data.result[0];
+      const token: string = data.result[1];
 
-      // Token'ı localStorage'e kaydet
       localStorage.setItem("token", token);
 
-      // Redux state'e kullanıcı verisi ve token döner
       return { user, token };
     } catch (error) {
       return thunkAPI.rejectWithValue("Kullanıcı verisi alınamadı");
