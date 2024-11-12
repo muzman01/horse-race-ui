@@ -62,9 +62,14 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
 
   // Reputation puanlarının hesaplanması
 
+
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
+
+  useEffect(() => {
+    AOS.init();
+  }, []);
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -92,6 +97,7 @@ const HomeContainer: React.FC<HomeContainerProps> = ({ sendMessage }) => {
   const handleAnimationEnd = (id: number) => {
     setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
+
 
   return (
     <div data-aos="zoom-in" className="w-full">
