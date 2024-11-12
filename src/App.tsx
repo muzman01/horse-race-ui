@@ -17,7 +17,7 @@ import { useTelegram } from "./context/TelegramContext";
 import LoadingComponent from "./components/LoadingComponent";
 import WaitingRoomBot from "./pages/WaitingRoomBot";
 import GameRoomBots from "./pages/GameRoomBots";
-import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
+// import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
 
 function App() {
   // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
@@ -50,7 +50,7 @@ function App() {
       if (telegramUser) {
         setIsLoading(true); // Başlangıçta yükleme durumunu true yap
         await dispatch(fetchUser(telegramUser));
-        await dispatch(fetchLeaderboard());
+        // await dispatch(fetchLeaderboard());
 
         setIsLoading(false); // Veriler yüklendikten sonra false yap
       }
