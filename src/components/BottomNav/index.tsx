@@ -1,15 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTelegram } from "../../context/TelegramContext";
+import { useEffect } from "react";
 
 const BottomNav = () => {
   const { handleVibrate } = useTelegram();
 
   const location = useLocation();
+  useEffect(() => {
+    // Menüye `refresh-transform` sınıfını ekleyip çıkararak yenileme işlemi yapıyoruz
+    const bottomNav = document.querySelector(".bottom-nav-refresh");
+    if (bottomNav) {
+      bottomNav.classList.add("refresh-transform");
+      setTimeout(() => {
+        bottomNav.classList.remove("refresh-transform");
+      }, 100); // 100ms bekleme süresi, iOS için yeterli bir süre
+    }
+  }, []);
 
   const isActive = (path: any) => location.pathname === path;
 
   return (
-<div className="px-7 bg-[#272a2f] py-2 shadow-lg z-[9999] relative">
+<div className="px-7 bg-[#272a2f] py-2 shadow-lg z-[9999] relative bottom-nav-refresh">
       <div className="flex justify-between max-w-3xl mx-auto">
         {" "}
         {/* Ortalamak için max-width ve justify-between */}

@@ -72,3 +72,7 @@ html {
 .animate-loading-bar {
   animation: loadingBar 1.5s ease-in-out infinite;
 }
+
+.refresh-transform {
+  transform: translateZ(0);
+}
