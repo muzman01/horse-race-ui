@@ -7,7 +7,6 @@ import { AppDispatch } from "./store";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Saloon from "./pages/Saloon";
-import Cupon from "./pages/Cupon";
 import Setting from "./pages/Setting";
 import WaitingRoom from "./pages/WaitingRoom";
 import GameRoom from "./pages/GameRoom";
@@ -18,11 +17,12 @@ import LoadingComponent from "./components/LoadingComponent";
 import WaitingRoomBot from "./pages/WaitingRoomBot";
 import GameRoomBots from "./pages/GameRoomBots";
 import { fetchLeaderboard } from "./store/thunks/fetchLeaderboard";
+import Farm from "./pages/Farm";
 
 function App() {
-  // const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
+  const dispatch = useDispatch<AppDispatch>(); // dispatch'i AppDispatch olarak tipliyoruz
 
-  // // staticUser değişkeni
+  // staticUser değişkeni
   // const staticUser = {
   //   telegram_id: 313131, // Zorunlu alan
   //   first_name: "John", // İsteğe bağlı
@@ -35,13 +35,13 @@ function App() {
   // useEffect(() => {
   //   const fetchData = async () => {
   //     const result = await dispatch(fetchUser(staticUser)); // async dispatch
+  //     await dispatch(fetchLeaderboard());
   //     console.log(result);
   //   };
 
   //   fetchData(); // Fetch user'ı çağır
   // }, [dispatch]);
 
-  const dispatch = useDispatch<AppDispatch>();
   const { telegramUser } = useTelegram();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,7 +75,7 @@ function App() {
           }
         />
         <Route path="/saloon" element={<Saloon />} />
-        <Route path="/coupon" element={<Cupon />} />
+        <Route path="/farm" element={<Farm />} />
         <Route path="/settings" element={<Setting />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/market" element={<Market />} />

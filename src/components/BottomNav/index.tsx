@@ -81,17 +81,17 @@ const BottomNav = () => {
           className="flex-1 group flex justify-center"
         >
           <Link
-            to="/coupon"
+            to="/farm"
             className={`flex flex-col items-center text-center mx-auto px-4 pt-2 w-full ${
-              isActive("/coupon") ? "text-[#2cb985]" : "text-gray-400"
+              isActive("/farm") ? "text-[#2cb985]" : "text-gray-400"
             } group-hover:text-[#2cb985]`}
           >
             <i
-              className={`fas fa-ticket-alt text-2xl ${
-                isActive("/coupon") ? "text-[#2cb985]" : ""
+              className={`fas fa-seedling text-2xl ${
+                isActive("/farm") ? "text-[#2cb985]" : ""
               }`}
             ></i>
-            <span className="text-xs">Coupon</span>
+            <span className="text-xs">Farm</span>
           </Link>
         </div>
         {/* Tasks */}

@@ -3,9 +3,9 @@ import ErrorBoundary from "../ErrorBoundary";
 import BottomNav from "../components/BottomNav";
 import { useTelegram } from "../context/TelegramContext";
 
-import CuponComponent from "../components/CuponComponent";
+import FarmComponent from "../components/FarmComponent";
 
-const Cupon = () => {
+const Farm = () => {
   const { showBackButton } = useTelegram();
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const Cupon = () => {
       <div className="flex flex-col justify-between overflow-x-hidden">
         <ErrorBoundary>
           <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
-            <CuponComponent />
+            <FarmComponent />
           </div>
         </ErrorBoundary>
       </div>
@@ -28,4 +28,4 @@ const Cupon = () => {
   );
 };
 
-export default Cupon;
+export default Farm;
